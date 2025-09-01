@@ -1,7 +1,18 @@
-import type { NextConfig } from "next";
+// next.config.js
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  experimental: {
+    serverActions: { bodySizeLimit: "50mb" }, 
+  },
+  images: {
+    domains: [
+      "images.unsplash.com",
+      "cdn.pixabay.com",
+      "upload.wikimedia.org",
+      "example.com",
+      "res.cloudinary.com",
+    ],
+  },
+}
 
-const nextConfig: NextConfig = {
-  /* config options here */
-};
-
-export default nextConfig;
+module.exports = nextConfig

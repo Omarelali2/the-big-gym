@@ -1,0 +1,205 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Package {
+  id           Int      @id @default(autoincrement())
+  name         String
+  description  String?
+  features     String[]
+  monthlyPrice Float    @default(0)
+  annualPrice  Float    @default(0)
+
+  currency    String   @default("USD")
+  isPayment   Boolean  @default(false)
+  discount    Float?
+  offerActive Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model WorkoutType {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  coaches     Coach[]
+  muscle      Muscle[]
+  users       User[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  images      String[]
+}
+
+model Muscle {
+  id          String       @id @default(cuid())
+  name        String
+  slug        String       @unique
+  description String?
+  imageUrl    String?
+  iconUrl     String?
+  workoutId   String?
+  workout     WorkoutType? @relation(fields: [workoutId], references: [id])
+
+  subMuscles SubMuscle[]
+
+  exercises Exercise[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SubMuscle {
+  id          String  @id @default(cuid())
+  name        String
+  slug        String  @unique
+  description String?
+  imageUrl    String?
+
+  muscleId String
+  muscle   Muscle @relation(fields: [muscleId], references: [id])
+
+  exercises Exercise[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Exercise {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  images      String[]
+  videoUrl    String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+
+  comments    ExerciseComment[]
+  ratings     ExerciseRating[]
+  favoritedBy User[]            @relation("UserFavorites")
+
+  difficulty String   @default("Beginner")
+  duration   Int?
+  reps       Int?
+  sets       Int?
+  category   String?
+  tags       String[]
+  equipment  String?
+
+  muscleId String?
+  muscle   Muscle? @relation(fields: [muscleId], references: [id])
+
+  subMuscleId String?
+  subMuscle   SubMuscle? @relation(fields: [subMuscleId], references: [id])
+}
+
+model ExerciseComment {
+  id         String   @id @default(cuid())
+  content    String
+  exercise   Exercise @relation(fields: [exerciseId], references: [id])
+  exerciseId String
+
+  user   User?   @relation(fields: [userId], references: [id])
+  userId String?
+
+  createdAt DateTime @default(now())
+}
+
+model ExerciseRating {
+  id         String   @id @default(cuid())
+  rating     Int
+  exercise   Exercise @relation(fields: [exerciseId], references: [id])
+  exerciseId String
+
+  user   User?   @relation(fields: [userId], references: [id])
+  userId String?
+
+  createdAt DateTime @default(now())
+}
+
+model User {
+  id                 String   @id @default(uuid())
+  clerkUserId        String   @unique
+  email              String   @unique
+  name               String?
+  imageUrl           String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  subscriptionActive Boolean  @default(false)
+  selectedWorkoutId  String?
+  selectedWorkout    WorkoutType? @relation(fields: [selectedWorkoutId], references: [id])
+  chats              Chat[]
+  isAdmin            Boolean @default(false)
+
+  // ======================
+  // Fitness & Health Data
+  // ======================
+  height          Float? // cm
+  weight          Float? // kg
+  bodyFat         Float? // %
+  muscleMass      Float? // kg
+  activityLevel   String? // "Sedentary" | "Light" | "Moderate" | "Active" | "VeryActive"
+  fitnessGoal     String? // "LoseWeight" | "GainMuscle" | "Maintain" | "Endurance"
+  experienceLevel String? // "Beginner" | "Intermediate" | "Advanced"
+
+  exerciseComments  ExerciseComment[]
+  exerciseRatings   ExerciseRating[]
+  favoriteExercises Exercise[] @relation("UserFavorites")
+}
+
+
+model Coach {
+  id         String  @id @default(cuid())
+  name       String
+  email      String  @unique @default("temp@example.com")
+  imageUrl   String?
+  password   String  @default("changeme")
+  speciality String  @default("N/A")
+  degree     String  @default("N/A")
+  experience String  @default("N/A")
+  about      String  @default("N/A")
+  fees       String  @default("0")
+  address    Json    @default("{}")
+  date       Int     @default(0)
+  available  Boolean @default(true)
+
+  slotsBooked Json         @default("{}")
+  workoutId   String?
+  workout     WorkoutType? @relation(fields: [workoutId], references: [id])
+  chats       Chat[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  chatId    String
+  sender    String // ممكن تعمل enum ["USER", "COACH"] بدل string
+  text      String? // Nullable، يعني لازم تتأكد قبل ما تعرضه في الـ frontend
+  imageUrl  String?
+  chat      Chat     @relation(fields: [chatId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model Chat {
+  id        String    @id @default(cuid())
+  userId    String
+  coachId   String
+  user      User      @relation(fields: [userId], references: [id])
+  coach     Coach     @relation(fields: [coachId], references: [id])
+  messages  Message[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now()) // حوّلها من @updatedAt إذا حبيت يكون auto
+}

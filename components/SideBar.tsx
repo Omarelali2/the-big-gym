@@ -1,0 +1,184 @@
+"use client"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
+import {
+  LayoutDashboard,
+  UserPlus,
+  List,
+  Dumbbell,
+  Layers,
+  CreditCard,
+  Home,
+} from "lucide-react"
+import { useState } from "react"
+
+const Sidebar = () => {
+  const pathname = usePathname()
+  const [listOpen, setListOpen] = useState(false)
+
+  return (
+    <aside className='h-screen w-64 bg-gray-900 text-white flex flex-col p-4 shadow-xl'>
+      <h2 className='text-2xl font-bold mb-8 text-center text-red-500 tracking-wide'>
+        Admin Panel
+      </h2>
+
+      <nav className='flex flex-col gap-1 flex-1'>
+        <Link
+          href='/dashboard'
+          className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-200 ${
+            pathname === "/dashboard"
+              ? "bg-red-600 border-l-4 border-orange-400 font-semibold shadow-inner"
+              : "hover:bg-gray-700 hover:text-white hover:translate-x-1"
+          }`}
+        >
+          <LayoutDashboard size={20} />
+          <span>Dashboard</span>
+        </Link>
+        <Link
+          href='/dashboard/add-exercises'
+          className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-200 ${
+            pathname === "/dashboard/add-exercises"
+              ? "bg-red-600 border-l-4 border-orange-400 font-semibold shadow-inner"
+              : "hover:bg-gray-700 hover:text-white hover:translate-x-1"
+          }`}
+        >
+          <Dumbbell size={20} />
+          <span>Add Exercise</span>
+        </Link>
+        <Link
+          href='/dashboard/add-coach'
+          className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-200 ${
+            pathname === "/dashboard/add-coach"
+              ? "bg-red-600 border-l-4 border-orange-400 font-semibold shadow-inner"
+              : "hover:bg-gray-700 hover:text-white hover:translate-x-1"
+          }`}
+        >
+          <UserPlus size={20} />
+          <span>Add Coach</span>
+        </Link>
+        <Link
+          href='/dashboard/add-subscribe'
+          className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-200 ${
+            pathname === "/dashboard/add-subscribe"
+              ? "bg-red-600 border-l-4 border-orange-400 font-semibold shadow-inner"
+              : "hover:bg-gray-700 hover:text-white hover:translate-x-1"
+          }`}
+        >
+          <CreditCard size={20} />
+          <span>Add Package</span>
+        </Link>
+        <Link
+          href='/dashboard/add-worktype'
+          className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-200 ${
+            pathname === "/dashboard/add-worktype"
+              ? "bg-red-600 border-l-4 border-orange-400 font-semibold shadow-inner"
+              : "hover:bg-gray-700 hover:text-white hover:translate-x-1"
+          }`}
+        >
+          <Layers size={20} />
+          <span>Add Work Out</span>
+        </Link>
+        <Link
+          href='/dashboard/add-exmuscule'
+          className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-200 ${
+            pathname === "/dashboard/add-exmuscule"
+              ? "bg-red-600 border-l-4 border-orange-400 font-semibold shadow-inner"
+              : "hover:bg-gray-700 hover:text-white hover:translate-x-1"
+          }`}
+        >
+          <Layers size={20} />
+          <span>Add Muscle Type</span>
+        </Link>
+
+        {/* Dropdown List */}
+        <button
+          onClick={() => setListOpen(!listOpen)}
+          className='flex items-center justify-between w-full px-4 py-2 rounded-lg hover:bg-gray-700 transition-all duration-200'
+        >
+          <div className='flex items-center gap-3'>
+            <List size={20} />
+            <span>List</span>
+          </div>
+          <span
+            className={`transform transition-transform ${
+              listOpen ? "rotate-90" : ""
+            }`}
+          >
+            ▶
+          </span>
+        </button>
+
+        {/* Dropdown content */}
+        {listOpen && (
+          <div className='flex flex-col ml-6 mt-1 gap-1'>
+            <Link
+              href='/dashboard/coaches'
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 ${
+                pathname === "/dashboard/coaches"
+                  ? "bg-red-600 font-semibold shadow-inner"
+                  : "hover:bg-gray-700"
+              }`}
+            >
+              Coaches
+            </Link>
+            <Link
+              href='/dashboard/list-exercises'
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 ${
+                pathname === "/dashboard/list-exercises"
+                  ? "bg-red-600 font-semibold shadow-inner"
+                  : "hover:bg-gray-700"
+              }`}
+            >
+              Exercises
+            </Link>
+            <Link
+              href='/dashboard/workType'
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 ${
+                pathname === "/dashboard/workType"
+                  ? "bg-red-600 font-semibold shadow-inner"
+                  : "hover:bg-gray-700"
+              }`}
+            >
+              Workout Types
+            </Link>
+            <Link
+              href='/dashboard/subscriptions'
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 ${
+                pathname === "/dashboard/subscriptions"
+                  ? "bg-red-600 font-semibold shadow-inner"
+                  : "hover:bg-gray-700"
+              }`}
+            >
+              Subscriptions
+            </Link>
+            <Link
+              href='/dashboard/types'
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 ${
+                pathname === "/dashboard/types"
+                  ? "bg-red-600 font-semibold shadow-inner"
+                  : "hover:bg-gray-700"
+              }`}
+            >
+              Type Exercises
+            </Link>
+          </div>
+        )}
+
+        {/* Add Exercise */}
+      </nav>
+
+      {/* Back to Home */}
+      <div className='mt-auto pt-4 border-t border-gray-700'>
+        <Link
+          href={"/clients"}
+          className='flex items-center gap-3 px-4 py-2 rounded-lg border-2 border-red-700 text-white hover:bg-orange-700 transition-all duration-200'
+        >
+          <Home size={20} />
+          <span>Back to Home</span>
+        </Link>
+      </div>
+    </aside>
+  )
+}
+
+export default Sidebar
