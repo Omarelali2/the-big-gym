@@ -35,7 +35,7 @@ const CoachingSlider = ({ userPackageName }: Props) => {
           className='relative rounded-lg overflow-hidden shadow-2xl flex flex-col items-center transform transition-transform duration-500 hover:scale-105 hover:rotate-1 cursor-pointer'
           onClick={() => {
             if (userPackageName === "Premium") {
-              window.location.href = `/coaches/${coach.id}`
+              window.location.href = `/clients/coaching/${coach.id}`
             } else {
               toast.error("You need a Premium subscription to view this coach")
             }

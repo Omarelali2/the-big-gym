@@ -32,8 +32,8 @@ export default function WorkoutTypePage() {
       } else {
         toast.error("Error: " + (result.error || "Something went wrong"))
       }
-    } catch (err: any) {
-      toast.error("Error: " + (err.message || "Something went wrong"))
+    } catch (err) {
+      toast.error("Something went wrong")
     } finally {
       setLoading(false)
     }

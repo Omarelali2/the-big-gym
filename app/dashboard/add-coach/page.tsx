@@ -76,8 +76,8 @@ export default function CoachPage() {
       } else {
         toast.error(result.error || "Something went wrong")
       }
-    } catch (err: any) {
-      toast.error(err.message || "Error occurred")
+    } catch (err) {
+      toast.error("Error occurred")
     } finally {
       setLoading(false)
     }

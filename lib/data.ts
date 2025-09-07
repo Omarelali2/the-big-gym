@@ -153,7 +153,7 @@ export async function getCoachById(id: string) {
         degree: coach.degree,
         experience: coach.experience,
         about: coach.about,
-        fees: coach.fees,
+        fees: coach.fees.toString(),
         workoutId: coach.workoutId,
         workout: coach.workout
           ? { id: coach.workout.id, name: coach.workout.name }
@@ -551,22 +551,22 @@ export async function deleteExerciseAction(id: string) {
     })
     return { success: true }
   } catch (error: unknown) {
-  let message = "Unknown error"
-  if (error instanceof Error) message = error.message
-  console.error("❌ Error fetching packages:", message)
-  return { success: false, error: message, packages: [] }
-}
+    let message = "Unknown error"
+    if (error instanceof Error) message = error.message
+    console.error("❌ Error fetching packages:", message)
+    return { success: false, error: message, packages: [] }
+  }
 }
 export async function deleteCoachAction(id: string) {
   try {
     await db.coach.delete({ where: { id } })
     return { success: true }
   } catch (error: unknown) {
-  let message = "Unknown error"
-  if (error instanceof Error) message = error.message
-  console.error("❌ Error fetching packages:", message)
-  return { success: false, error: message, packages: [] }
-}
+    let message = "Unknown error"
+    if (error instanceof Error) message = error.message
+    console.error("❌ Error fetching packages:", message)
+    return { success: false, error: message, packages: [] }
+  }
 }
 
 export async function toggleUserSubscription(userId: string) {
@@ -592,11 +592,11 @@ export async function toggleUserSubscription(userId: string) {
       selectedPackageId: updatedUser.selectedPackageId,
     }
   } catch (error: unknown) {
-  let message = "Unknown error"
-  if (error instanceof Error) message = error.message
-  console.error("❌ Error fetching packages:", message)
-  return { success: false, error: message, packages: [] }
-}
+    let message = "Unknown error"
+    if (error instanceof Error) message = error.message
+    console.error("❌ Error fetching packages:", message)
+    return { success: false, error: message, packages: [] }
+  }
 }
 
 export type UserReview = {
@@ -620,7 +620,7 @@ export async function getExerciseStats(
     where: { id: exerciseId },
     include: {
       comments: {
-        include: { user: true }, 
+        include: { user: true },
       },
       ratings: true,
     },

@@ -21,7 +21,6 @@ const Sidebar = () => {
 
   return (
     <>
-      {/* زر الموبايل */}
       <button
         className="md:hidden fixed top-4 left-4 z-50 bg-red-600 p-2 rounded-lg shadow-lg"
         onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -29,7 +28,6 @@ const Sidebar = () => {
         {sidebarOpen ? <X size={24} color="white" /> : <Menu size={24} color="white" />}
       </button>
 
-      {/* الـ Sidebar */}
       <aside
         className={`fixed md:static top-0 left-0 h-screen w-64 bg-gray-900 text-white flex flex-col p-4 overflow-auto shadow-xl transform transition-transform duration-300 z-40
         ${sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}
@@ -52,7 +50,6 @@ const Sidebar = () => {
             <span>Dashboard</span>
           </Link>
 
-          {/* Add Exercise */}
           <Link
             href="/dashboard/add-exercises"
             className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-200 ${
@@ -65,7 +62,6 @@ const Sidebar = () => {
             <span>Add Exercise</span>
           </Link>
 
-          {/* Add Coach */}
           <Link
             href="/dashboard/add-coach"
             className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-200 ${
@@ -78,7 +74,6 @@ const Sidebar = () => {
             <span>Add Coach</span>
           </Link>
 
-          {/* Add Package */}
           <Link
             href="/dashboard/add-subscribe"
             className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-200 ${
@@ -91,7 +86,6 @@ const Sidebar = () => {
             <span>Add Package</span>
           </Link>
 
-          {/* Add Workout */}
           <Link
             href="/dashboard/add-worktype"
             className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-200 ${
@@ -104,7 +98,6 @@ const Sidebar = () => {
             <span>Add Work Out</span>
           </Link>
 
-          {/* Add Muscle */}
           <Link
             href="/dashboard/add-exmuscule"
             className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-200 ${
@@ -117,7 +110,6 @@ const Sidebar = () => {
             <span>Add Muscle Type</span>
           </Link>
 
-          {/* Dropdown List */}
           <button
             onClick={() => setListOpen(!listOpen)}
             className="flex items-center justify-between w-full px-4 py-2 rounded-lg hover:bg-gray-700 transition-all duration-200"
@@ -187,7 +179,6 @@ const Sidebar = () => {
           )}
         </nav>
 
-        {/* Back to Home */}
         <div className="mt-auto pt-4 border-t border-gray-700">
           <Link
             href={"/clients"}

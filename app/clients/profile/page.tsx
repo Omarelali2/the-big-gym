@@ -93,7 +93,6 @@ export default function ProfilePage() {
     const loadProfile = async () => {
       const data = await getProfile(user.id)
 
-      // Extract only the properties defined in Profile
       const cleanProfile: Profile = {
         id: data.id,
         name: data.name,
@@ -158,7 +157,6 @@ export default function ProfilePage() {
   try {
     const updated = await updateUserAction(user.id, formValues)
 
-    // إذا عندك selectedWorkoutId، جلب object
     const workout = updated.selectedWorkoutId
       ? await getWorkoutById(updated.selectedWorkoutId)
       : null

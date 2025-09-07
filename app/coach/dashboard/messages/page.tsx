@@ -94,9 +94,8 @@ const CoachMessagesPage = () => {
       )
 
       setNewMessage("") 
-    } catch (err: any) {
+    } catch (err) {
       console.error("Error sending message:", err)
-      alert(err.message)
     }
   }
 

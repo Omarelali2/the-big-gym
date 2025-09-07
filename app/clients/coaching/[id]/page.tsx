@@ -2,21 +2,53 @@ import React from "react"
 import Link from "next/link"
 import { getCoachById } from "@/lib/data"
 
-type CoachDetailParams = {
+interface Workout {
+  id: string
+  name: string
+}
+
+interface Coach {
+  id: string
+  name: string
+  speciality: string
+  degree: string
+  experience: string
+  fees: string // خليها string
+  about: string
+  imageUrl?: string | null
+  workout?: Workout | null
+}
+
+interface CoachResult {
+  success: boolean
+  coach: Coach | null
+}
+
+interface CoachPageProps {
   params: {
     id: string
   }
 }
 
-export default async function CoachDetail({ params }: CoachDetailParams) {
+export default async function CoachDetail({
+  params,
+}: CoachPageProps): Promise<React.ReactNode> {
   const { id } = params
 
-  const { success, coach } = await getCoachById(id)
+  const result: CoachResult = await getCoachById(id)
 
-  if (!success || !coach)
+  const coach: Coach | null = result.coach
+    ? {
+        ...result.coach,
+        fees: result.coach.fees.toString(), 
+      }
+    : null
+
+  if (!result.success || !coach) {
     return (
       <p className='p-10 text-gray-400 text-center text-xl'>Coach not found.</p>
     )
+  }
 
   return (
     <div className='p-10 max-w-7xl mx-auto bg-gray-800 text-white rounded-3xl shadow-2xl flex flex-col md:flex-row gap-12 mt-20 transition-all duration-500 hover:shadow-3xl'>

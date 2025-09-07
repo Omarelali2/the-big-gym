@@ -3,14 +3,8 @@
 import React, { useEffect, useState } from "react"
 import { useParams } from "next/navigation"
 import { getMuscleBySlug } from "@/lib/data"
-import { getExerciseStats, ExerciseStats } from "@/lib/data" 
-import {
-  Star,
-  MessageSquare,
-  Clock,
-  Dumbbell,
-  Users,
-} from "lucide-react"
+import { getExerciseStats, ExerciseStats } from "@/lib/data"
+import { Star, MessageSquare, Clock, Dumbbell, Users } from "lucide-react"
 import Link from "next/link"
 
 type Exercise = {
@@ -36,25 +30,40 @@ type Muscle = {
   iconUrl?: string | null
   exercises: Exercise[]
 }
+type RawExercise = {
+  id: string
+  title: string
+  description: string | null
+  images: string[]
+  videoUrl: string | null
+  difficulty: string
+  category?: string | null
+  equipment?: string | null
+  duration?: number | null
+  sets?: number | null
+  reps?: number | null
+}
 
 export default function MuscleDetailPage() {
   const params = useParams()
   const [muscle, setMuscle] = useState<Muscle | null>(null)
   const [loading, setLoading] = useState(true)
-  const [exerciseStats, setExerciseStats] = useState<Record<string, ExerciseStats>>({})
+  const [exerciseStats, setExerciseStats] = useState<
+    Record<string, ExerciseStats>
+  >({})
 
-  const normalizeExercise = (ex: any): Exercise => ({
+  const normalizeExercise = (ex: RawExercise): Exercise => ({
     id: ex.id,
     title: ex.title,
     description: ex.description ?? null,
     images: ex.images?.length ? ex.images : ["/placeholder.png"],
     videoUrl: ex.videoUrl ?? null,
     difficulty: ex.difficulty ?? "Beginner",
-    category: ex.category ?? null,
-    equipment: ex.equipment ?? null,
-    duration: ex.duration ?? null,
-    sets: ex.sets ?? null,
-    reps: ex.reps ?? null,
+    category: ex.category ?? undefined,
+    equipment: ex.equipment ?? undefined,
+    duration: ex.duration ?? undefined,
+    sets: ex.sets ?? undefined,
+    reps: ex.reps ?? undefined,
   })
 
   useEffect(() => {
@@ -65,7 +74,9 @@ export default function MuscleDetailPage() {
 
       if (res.success && res.muscle) {
         const m = res.muscle
-        const normalizedExercises = m.exercises?.map(normalizeExercise) ?? []
+        const normalizedExercises = (m.exercises as RawExercise[]).map(
+          normalizeExercise
+        )
 
         setMuscle({
           id: m.id,
@@ -79,7 +90,7 @@ export default function MuscleDetailPage() {
 
         const stats: Record<string, ExerciseStats> = {}
         await Promise.all(
-          normalizedExercises.map(async (ex) => {
+          normalizedExercises.map(async ex => {
             const data = await getExerciseStats(ex.id)
             stats[ex.id] = data
           })
@@ -96,7 +107,9 @@ export default function MuscleDetailPage() {
     return (
       <div className='flex items-center justify-center mt-20 min-h-[60vh]'>
         <div className='w-16 h-16 border-4 border-red-600 border-t-transparent border-solid rounded-full animate-spin'></div>
-        <span className='ml-4 text-white text-lg font-semibold'>Loading...</span>
+        <span className='ml-4 text-white text-lg font-semibold'>
+          Loading...
+        </span>
       </div>
     )
 
@@ -112,7 +125,9 @@ export default function MuscleDetailPage() {
       <div className='text-center mb-12'>
         <h1 className='text-5xl font-extrabold text-white'>{muscle.name}</h1>
         {muscle.description && (
-          <p className='mt-4 text-gray-400 max-w-3xl mx-auto'>{muscle.description}</p>
+          <p className='mt-4 text-gray-400 max-w-3xl mx-auto'>
+            {muscle.description}
+          </p>
         )}
       </div>
 
@@ -141,9 +156,19 @@ export default function MuscleDetailPage() {
                   </p>
 
                   <div className='flex flex-wrap gap-2 mb-3'>
-                    <span className='bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-semibold'>{ex.difficulty}</span>
-                    {ex.category && <span className='bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-semibold'>{ex.category}</span>}
-                    {ex.equipment && <span className='bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-semibold'>{ex.equipment}</span>}
+                    <span className='bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-semibold'>
+                      {ex.difficulty}
+                    </span>
+                    {ex.category && (
+                      <span className='bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-semibold'>
+                        {ex.category}
+                      </span>
+                    )}
+                    {ex.equipment && (
+                      <span className='bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-semibold'>
+                        {ex.equipment}
+                      </span>
+                    )}
                   </div>
                 </div>
 
@@ -169,10 +194,16 @@ export default function MuscleDetailPage() {
                       <Star
                         key={i}
                         size={18}
-                        className={i <= (stats?.averageRating ?? 0) ? "text-yellow-400" : "text-gray-600"}
+                        className={
+                          i <= (stats?.averageRating ?? 0)
+                            ? "text-yellow-400"
+                            : "text-gray-600"
+                        }
                       />
                     ))}
-                    <span className='text-sm text-gray-300 ml-2'>({stats?.numReviews ?? 0})</span>
+                    <span className='text-sm text-gray-300 ml-2'>
+                      ({stats?.numReviews ?? 0})
+                    </span>
                   </div>
 
                   <div className='flex items-center gap-1 text-gray-300'>

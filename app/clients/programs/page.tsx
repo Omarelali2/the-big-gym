@@ -7,14 +7,7 @@ import { getMuscles, getAllWorkouts } from "@/lib/data"
 import { getUserSubscription } from "@/lib/action"
 
 type Exercise = { id: string; title: string }
-type SubMuscle = {
-  id: string
-  name: string
-  slug: string
-  description?: string
-  imageUrl?: string
-  exercises?: Exercise[]
-}
+
 type Muscle = {
   id: string
   name: string

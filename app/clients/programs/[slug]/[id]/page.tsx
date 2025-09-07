@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useEffect, useState } from "react"
-import { useParams, useRouter } from "next/navigation"
+import { useParams } from "next/navigation"
 import {
   deleteReview,
   getExerciseById,
@@ -13,7 +13,6 @@ import { Clock, Dumbbell, Activity, Star } from "lucide-react"
 import { useUser } from "@clerk/nextjs"
 import { addExerciseComment } from "@/lib/action"
 import toast from "react-hot-toast"
-import Image from "next/image"
 
 type ExerciseComment = {
   id: string
@@ -176,7 +175,6 @@ export default function ExerciseDetailPage() {
         rating: newRating,
       })
 
-      // تحديث exercise
       setExercise(prev => {
         if (!prev) return prev
         return {
@@ -202,7 +200,6 @@ export default function ExerciseDetailPage() {
         }
       })
 
-      // **تحديث stats مباشرة بعد إضافة التعليق**
       setStats(prev => {
         if (!prev) return null
         const newReview = {
@@ -235,9 +232,8 @@ export default function ExerciseDetailPage() {
       setNewComment("")
       setNewRating(0)
       toast.success("Comment and rating added successfully!")
-    } catch (err: any) {
+    } catch (err) {
       console.error("Failed to add comment:", err)
-      toast.error(err.message || "Failed to add comment")
     }
   }
 
@@ -327,12 +323,6 @@ export default function ExerciseDetailPage() {
 
     fetchExerciseAndCoaches()
   }, [params.id])
-
-  const getAverageRating = (ratings: ExerciseRating[]) => {
-    if (!ratings.length) return 0
-    const sum = ratings.reduce((acc, r) => acc + r.rating, 0)
-    return Math.round((sum / ratings.length) * 10) / 10
-  }
 
   if (loading)
     return (
@@ -526,9 +516,9 @@ export default function ExerciseDetailPage() {
                   } else {
                     toast.error("No review found to delete")
                   }
-                } catch (err: any) {
+                } catch (err) {
                   console.error(err)
-                  toast.error(err.message || "Failed to delete review")
+                  toast.error("Failed to delete review")
                 }
               }}
             >

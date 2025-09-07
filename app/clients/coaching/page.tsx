@@ -1,10 +1,10 @@
-import { currentUser } from "@clerk/nextjs/server" // ✅ server-side only
+import { currentUser } from "@clerk/nextjs/server" 
 import { db } from "@/lib/db"
 import Image from "next/image"
 import Link from "next/link"
 
 export default async function CoachesPage() {
-  const user = await currentUser() // 🔹 جلب المستخدم الحالي
+  const user = await currentUser() 
 
   if (!user) {
     return (
@@ -15,7 +15,6 @@ export default async function CoachesPage() {
     )
   }
 
-  // 🔹 جلب المستخدم من DB مع الباقة
   const dbUser = await db.user.findUnique({
     where: { clerkUserId: user.id },
     include: { selectedPackage: true },
@@ -30,7 +29,6 @@ export default async function CoachesPage() {
     )
   }
 
-  // 🔹 جلب الكوتشز
   const coaches = await db.coach.findMany({ include: { workout: true } })
 
   if (coaches.length === 0) {

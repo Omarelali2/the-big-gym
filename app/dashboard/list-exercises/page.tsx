@@ -1,11 +1,9 @@
-// app/exercises/page.tsx
 import ExercisesTable from "@/components/ExercisesPage"
 import { getAllExercises } from "@/lib/data"
 
 export default async function ExercisesPage() {
   const exercises = await getAllExercises()
 
-  // حوّل الـ Dates لـ string
   const serializedExercises = exercises.map((ex) => ({
     ...ex,
     createdAt: ex.createdAt.toISOString(),

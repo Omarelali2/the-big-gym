@@ -6,15 +6,41 @@ import { searchAll } from "@/lib/data"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 
+interface SearchResults {
+  coaches: {
+    id: string
+    name: string
+    slug: string
+    imageUrl?: string | null
+  }[]
+  exercises: {
+    id: string
+    title: string
+    slug: string
+    images: string[]
+  }[]
+  muscles: {
+    id: string
+    name: string
+    slug: string
+    imageUrl?: string | null
+  }[]
+  workouts: {
+    id: string
+    name: string
+    slug: string
+    images: string[]
+  }[]
+}
+
 export default function SearchBar() {
   const [query, setQuery] = useState("")
-  const [results, setResults] = useState<any>(null)
   const [loading, setLoading] = useState(false)
   const [expanded, setExpanded] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
+  const [results, setResults] = useState<SearchResults | null>(null)
 
-  // Handle live search
   useEffect(() => {
     if (!query.trim()) {
       setResults(null)
@@ -24,9 +50,37 @@ export default function SearchBar() {
     const timeout = setTimeout(async () => {
       setLoading(true)
       const data = await searchAll({ query })
-      setResults(data)
+
+      const normalizedData: SearchResults = {
+        coaches: data.coaches.map(c => ({
+          id: c.id,
+          name: c.name,
+          slug: c.id,
+          imageUrl: c.imageUrl ?? null,
+        })),
+        exercises: data.exercises.map(e => ({
+          id: e.id,
+          title: e.title,
+          slug: e.id,
+          images: e.images,
+        })),
+        muscles: data.muscles.map(m => ({
+          id: m.id,
+          name: m.name,
+          slug: m.slug,
+          imageUrl: m.imageUrl ?? null,
+        })),
+        workouts: data.workouts.map(w => ({
+          id: w.id,
+          name: w.name,
+          slug:  w.id,
+          images: w.images,
+        })),
+      }
+
+      setResults(normalizedData)
       setLoading(false)
-    }, 300) // debounce 300ms
+    }, 300)
 
     return () => clearTimeout(timeout)
   }, [query])
@@ -46,7 +100,7 @@ export default function SearchBar() {
     return () => document.removeEventListener("click", handleClickOutside)
   }, [])
 
-  const handleNavigate = (type: string,slug:string, id: string) => {
+  const handleNavigate = (type: string, slug: string, id: string) => {
     switch (type) {
       case "coach":
         router.push(`/clients/coaching/${id}`)
@@ -101,7 +155,7 @@ export default function SearchBar() {
                     {results.coaches.map((c: any) => (
                       <div
                         key={c.id}
-                        onClick={() => handleNavigate("coach", c.slug,c.id)}
+                        onClick={() => handleNavigate("coach", c.slug, c.id)}
                         className='flex items-center gap-3 cursor-pointer hover:bg-gray-700 rounded-md p-2'
                       >
                         {c.imageUrl ? (
@@ -133,7 +187,7 @@ export default function SearchBar() {
                     {results.exercises.map((e: any) => (
                       <div
                         key={e.id}
-                        onClick={() => handleNavigate("exercise",e.slug, e.id)}
+                        onClick={() => handleNavigate("exercise", e.slug, e.id)}
                         className='flex items-center gap-3 cursor-pointer hover:bg-gray-700 rounded-md p-2'
                       >
                         {e.images.length > 0 ? (
@@ -165,7 +219,7 @@ export default function SearchBar() {
                     {results.muscles.map((m: any) => (
                       <div
                         key={m.id}
-                        onClick={() => handleNavigate("muscle",m.slug, m.id)}
+                        onClick={() => handleNavigate("muscle", m.slug, m.id)}
                         className='flex items-center gap-3 cursor-pointer hover:bg-gray-700 rounded-md p-2'
                       >
                         {m.imageUrl ? (
@@ -197,7 +251,7 @@ export default function SearchBar() {
                     {results.workouts.map((w: any) => (
                       <div
                         key={w.id}
-                        onClick={() => handleNavigate("workout",w.slug, w.id)}
+                        onClick={() => handleNavigate("workout", w.slug, w.id)}
                         className='flex items-center gap-3 cursor-pointer hover:bg-gray-700 rounded-md p-2'
                       >
                         {w.images.length > 0 ? (

@@ -5,10 +5,17 @@ import ChatInput from "../../../../components/ChatInput"
 import { getChatMessages } from "@/lib/action"
 import { getCoachById } from "@/lib/data"
 
-// Types
-type Message = {
+export type Message = {
   id: string
   text: string
+  sender: "USER" | "COACH"
+  createdAt: string
+  coachId?: string
+  userId?: string
+}
+type MsgFromServer = {
+  id: string
+  text?: string
   sender: "USER" | "COACH"
   createdAt: string
 }
@@ -51,10 +58,10 @@ export default function ChatPage({
         if (!isMounted) return
 
         setMessages(
-          msgs.map((msg: any) => ({
+          (msgs as MsgFromServer[]).map(msg => ({
             id: msg.id,
             text: msg.text ?? "",
-            sender: msg.sender === "USER" ? "USER" : "COACH",
+            sender: msg.sender, 
             createdAt: new Date(msg.createdAt).toLocaleTimeString([], {
               hour: "2-digit",
               minute: "2-digit",
@@ -115,7 +122,6 @@ export default function ChatPage({
         </div>
       </div>
 
-      {/* Messages */}
       <div className='flex-1 overflow-y-auto p-4 space-y-3'>
         {messages.length === 0 && (
           <p className='text-center text-gray-400 mt-20'>
