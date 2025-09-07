@@ -11,7 +11,11 @@ const nextConfig = {
       "upload.wikimedia.org",
       "example.com",
       "res.cloudinary.com",
+      "plus.unsplash.com",
+      'img.clerk.com'
     ],
+    
+    
   },
 }
 

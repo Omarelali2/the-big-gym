@@ -71,7 +71,6 @@ const CoachMessagesPage = () => {
         createdAt: messageResult.createdAt,
       }
 
-      // تحديث chat الحالي
       setSelectedChat(prev =>
         prev
           ? {
@@ -82,7 +81,6 @@ const CoachMessagesPage = () => {
           : prev
       )
 
-      // تحديث الـchats list
       setChats(prev =>
         prev.map(c =>
           c.id === selectedChat.id
@@ -95,7 +93,7 @@ const CoachMessagesPage = () => {
         )
       )
 
-      setNewMessage("") // تفريغ input
+      setNewMessage("") 
     } catch (err: any) {
       console.error("Error sending message:", err)
       alert(err.message)
@@ -106,7 +104,6 @@ const CoachMessagesPage = () => {
 
   return (
     <div className='flex h-screen bg-gray-800 text-white'>
-      {/* Sidebar */}
       <aside className='w-80 border-r border-gray-700 overflow-y-auto'>
         <h2 className='text-xl font-bold p-4 border-b border-gray-700'>
           Chats
@@ -138,7 +135,6 @@ const CoachMessagesPage = () => {
         ))}
       </aside>
 
-      {/* Main Chat View */}
       <main className='flex-1 flex flex-col p-5'>
         {!selectedChat && (
           <p className='text-gray-400'>Select a chat to start messaging</p>

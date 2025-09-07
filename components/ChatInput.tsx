@@ -18,7 +18,7 @@ export default function ChatInput({
 
     startTransition(async () => {
       try {
-        if (!coachId) throw new Error("coachId is required"); // تأكد من الـ ID
+        if (!coachId) throw new Error("coachId is required");
         const newMessage = await sendMessage(coachId, text);
         onNewMessage(newMessage);
         setText("");

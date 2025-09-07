@@ -1,5 +1,6 @@
 "use server"
-
+import { currentUser } from "@clerk/nextjs/server"
+import { auth } from "@clerk/nextjs/server"
 import { db } from "@/lib/db"
 import { v2 as cloudinary } from "cloudinary"
 import bcrypt from "bcrypt"
@@ -14,14 +15,12 @@ export async function addWorkoutTypeAction({
   description,
   images,
   coachIds,
-  exerciseIds,
   userIds,
 }: {
   name: string
   description?: string
   images?: (File | string)[]
   coachIds?: string[]
-  exerciseIds?: string[]
   userIds?: string[]
 }) {
   try {
@@ -205,7 +204,7 @@ export async function addPackageAction({
   annualPrice,
   currency = "USD",
   isPayment = false,
-  discount = 0, // هيدي القيمة بالمية (%)
+  discount = 0,
   offerActive = false,
 }: {
   name: string
@@ -215,15 +214,13 @@ export async function addPackageAction({
   annualPrice: number
   currency?: string
   isPayment?: boolean
-  discount?: number // % نسبة الخصم
+  discount?: number
   offerActive?: boolean
 }) {
   try {
     if (isPayment) {
       return { success: false, error: "Cannot add package: isPayment is true" }
     }
-
-    // تطبيق الخصم
     const finalMonthlyPrice =
       discount > 0
         ? monthlyPrice - (monthlyPrice * discount) / 100
@@ -266,7 +263,6 @@ export async function addExerciseAction({
   tags = [],
   equipment,
   muscleId,
-  subMuscleId,
 }: {
   title: string
   description?: string
@@ -280,7 +276,6 @@ export async function addExerciseAction({
   tags?: string[]
   equipment?: string
   muscleId?: string
-  subMuscleId?: string
 }) {
   try {
     let uploadedImages: string[] = []
@@ -347,7 +342,6 @@ export async function addExerciseAction({
         tags,
         equipment,
         muscleId,
-        subMuscleId,
       },
     })
 
@@ -382,12 +376,6 @@ export async function addMuscleWithSubMuscles(data: {
   imageFile?: File
   iconFile?: File
   workoutId?: string
-  subMuscles?: {
-    name: string
-    slug: string
-    description?: string
-    imageFile?: File
-  }[]
 }) {
   try {
     let imageUrl: string | undefined
@@ -426,37 +414,7 @@ export async function addMuscleWithSubMuscles(data: {
         imageUrl,
         iconUrl,
         workoutId: data.workoutId,
-        subMuscles: data.subMuscles
-          ? {
-              create: await Promise.all(
-                data.subMuscles.map(async sub => {
-                  let subImageUrl: string | undefined
-                  if (sub.imageFile) {
-                    const arrayBuffer = await sub.imageFile.arrayBuffer()
-                    const buffer = Buffer.from(arrayBuffer)
-                    const res: any = await new Promise((resolve, reject) => {
-                      cloudinary.uploader
-                        .upload_stream(
-                          { folder: "muscles/sub" },
-                          (err, result) => (err ? reject(err) : resolve(result))
-                        )
-                        .end(buffer)
-                    })
-                    subImageUrl = res.secure_url
-                  }
-
-                  return {
-                    name: sub.name,
-                    slug: sub.slug,
-                    description: sub.description,
-                    imageUrl: subImageUrl,
-                  }
-                })
-              ),
-            }
-          : undefined,
       },
-      include: { subMuscles: true },
     })
 
     return { success: true, muscle }
@@ -465,7 +423,6 @@ export async function addMuscleWithSubMuscles(data: {
     return { success: false, message: error.message }
   }
 }
-import { currentUser } from "@clerk/nextjs/server"
 
 export async function sendMessage(coachId: string, text: string) {
   if (!coachId) throw new Error("coachId is required")
@@ -599,9 +556,6 @@ export async function getCoachChatsAction(coachId: string) {
   return { success: true, chats: formattedChats }
 }
 
-import { auth } from "@clerk/nextjs/server"
-
-// البيانات الجاية من form
 export type FitnessData = {
   height?: number
   weight?: number
@@ -612,8 +566,13 @@ export type FitnessData = {
   experienceLevel?: string
 }
 
-// القيم المسموحة لكل حقل
-const validActivityLevels = ["Sedentary", "Light", "Moderate", "Active", "VeryActive"]
+const validActivityLevels = [
+  "Sedentary",
+  "Light",
+  "Moderate",
+  "Active",
+  "VeryActive",
+]
 const validFitnessGoals = ["LoseWeight", "GainMuscle", "Maintain", "Endurance"]
 const validExperienceLevels = ["Beginner", "Intermediate", "Advanced"]
 
@@ -653,4 +612,105 @@ export async function saveUserFitnessData(data: FitnessData) {
 
   return { success: true }
 }
+
+import OpenAI from "openai"
+
+export async function getCaloriesAdvice(intake: number, burned: number) {
+  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+
+  const prompt = `You are a fitness advisor AI. A user consumed ${intake} calories and burned ${burned} calories today. Give short, friendly advice.`
+
+  try {
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [
+        { role: "system", content: "You are a helpful fitness AI." },
+        { role: "user", content: prompt },
+      ],
+      temperature: 0.7,
+      max_tokens: 60,
+    })
+
+    return (
+      completion.choices[0].message.content?.trim() ||
+      "✅ Your calories look balanced."
+    )
+  } catch (err) {
+    console.error(err)
+    return "⚠️ Unable to generate advice right now."
+  }
+}
+
+type UpdateUserInput = Partial<{
+  name: string
+  phoneNumber: string
+  address: string
+  bio: string
+  height: number
+  weight: number
+  bodyFat: number
+  muscleMass: number
+  activityLevel: string
+  fitnessGoal: string
+  experienceLevel: string
+  subscriptionActive: boolean
+  isAdmin: boolean
+  selectedWorkoutId: string
+}>
+
+export async function updateUserAction(
+  clerkUserId: string,
+  data: UpdateUserInput
+) {
+  const existingUser = await db.user.findUnique({ where: { clerkUserId } })
+  if (!existingUser) throw new Error("User not found")
+
+  const updatedUser = await db.user.update({
+    where: { clerkUserId },
+    data,
+  })
+
+  return updatedUser
+}
+
+interface AddCommentInput {
+  userId: string
+  exerciseId: string
+  content: string
+  rating?: number // ✅ اختياري
+}
+
+export async function addExerciseComment({
+  userId,
+  exerciseId,
+  content,
+  rating,
+}: AddCommentInput) {
+  if (rating === undefined || rating <= 0) {
+    throw new Error("Rating is required and must be greater than 0")
+  }
+
+  let user = await db.user.findUnique({ where: { clerkUserId: userId } })
+  if (!user) {
+    user = await db.user.create({ data: { clerkUserId: userId, email: "user-email@example.com" } })
+  }
+
+  const exercise = await db.exercise.findUnique({ where: { id: exerciseId } })
+  if (!exercise) throw new Error("Exercise does not exist")
+
+  // ✅ التحقق إذا المستخدم أضاف comment سابق
+  const existingComment = await db.exerciseComment.findFirst({
+    where: { exerciseId, userId: user.id }
+  })
+  if (existingComment) {
+    throw new Error("You have already submitted a comment for this exercise")
+  }
+
+  const comment = await db.exerciseComment.create({ data: { content, exerciseId, userId: user.id } })
+
+  const exerciseRating = await db.exerciseRating.create({ data: { rating, exerciseId, userId: user.id } })
+
+  return { comment, exerciseRating }
+}
+
 

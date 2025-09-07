@@ -31,9 +31,17 @@ const Home = async () => {
 }
 
 
-  const dbUser = await db.user.findUnique({
-    where: { clerkUserId: user.id },
-  })
+  const dbUser = await db.user.upsert({
+  where: { clerkUserId: user.id },
+  update: {},
+  create: {
+    clerkUserId: user.id,
+    email: user.emailAddresses[0].emailAddress,
+    name: user.firstName || user.username || "Anonymous",
+    imageUrl: user.imageUrl,
+  },
+})
+
 
   if (!dbUser) throw new Error("User not found")
 

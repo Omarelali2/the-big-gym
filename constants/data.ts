@@ -13,12 +13,12 @@ export const headerData = [
   },
 
   {
-    title: "MemberShip",
-    href: "/membership",
+    title: "Tools",
+    href: "/clients/tools",
   },
   {
     title: "About Us",
-    href: "/about-us",
+    href: "/clients/about",
   },
 ]
 

@@ -19,7 +19,6 @@ export default function CoachLoginForm() {
     const res = await coachLoginAction({ email, password });
     setLoading(false);
 
-   // CoachLoginForm.tsx
 if (res.success && res.coachId && res.coachName) {
   localStorage.setItem("coachId", res.coachId);
   localStorage.setItem("coachName", res.coachName);
@@ -42,7 +41,6 @@ if (res.success && res.coachId && res.coachName) {
           <p className="text-red-500 text-center font-medium">{error}</p>
         )}
 
-        {/* Email field */}
         <div className="relative">
           <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
           <input
@@ -54,7 +52,6 @@ if (res.success && res.coachId && res.coachName) {
           />
         </div>
 
-        {/* Password field */}
         <div className="relative">
           <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
           <input
@@ -66,7 +63,6 @@ if (res.success && res.coachId && res.coachName) {
           />
         </div>
 
-        {/* Submit button */}
         <button
           type="submit"
           disabled={loading}
@@ -97,7 +93,6 @@ if (res.success && res.coachId && res.coachName) {
           {loading ? "Logging in..." : "Login"}
         </button>
 
-        {/* Forgot password link */}
         <p className="text-sm text-gray-400 text-center">
           Forgot password?{" "}
           <a href="#" className="text-orange-500 hover:underline">

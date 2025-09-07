@@ -28,22 +28,25 @@ export async function createCheckoutSession(
   const unitAmount = Math.round(basePrice * 100)
 
   const session = await stripe.checkout.sessions.create({
-  mode: "payment",
-  line_items: [
-    {
-      price_data: {
-        currency: pkg.currency.toLowerCase(),
-        product_data: { name: `${pkg.name} (${plan})` },
-        unit_amount: unitAmount,
+    mode: "payment",
+    line_items: [
+      {
+        price_data: {
+          currency: pkg.currency.toLowerCase(),
+          product_data: { name: `${pkg.name} (${plan})` },
+          unit_amount: unitAmount,
+        },
+        quantity: 1,
       },
-      quantity: 1,
+    ],
+    success_url: `${frontendUrl}/onboarding/health?payment=success&userId=${userId}`,
+    cancel_url: `${frontendUrl}`,
+    client_reference_id: userId,
+    metadata: {
+      packageId: String(packageId),
+      plan,
     },
-  ],
-  success_url: `${frontendUrl}/clients/onboarding/health?payment=success&userId=${userId}`,
-  cancel_url: `${frontendUrl}/cancel`,
-  client_reference_id: userId,
-})
-
+  })
 
   console.log(
     `[Stripe] Checkout session created for user ${userId}: ${session.id}`
@@ -76,6 +79,8 @@ export async function stripeWebhook(req: Request) {
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session
     const userId = session.client_reference_id
+    const packageId = session.metadata?.packageId
+    const plan = session.metadata?.plan
 
     if (!userId) {
       console.warn("[Stripe] No client_reference_id found, cannot update user")
@@ -89,9 +94,14 @@ export async function stripeWebhook(req: Request) {
       } else {
         await db.user.update({
           where: { clerkUserId: userId },
-          data: { subscriptionActive: true },
+          data: {
+            subscriptionActive: true,
+            selectedPackageId: packageId ? Number(packageId) : null,
+          },
         })
-        console.log(`[Stripe] User ${userId} subscriptionActive set to true`)
+        console.log(
+          `[Stripe] User ${userId} subscribed to package ${packageId} (${plan})`
+        )
       }
     } catch (err) {
       console.error("[Stripe] Error updating user subscription:", err)

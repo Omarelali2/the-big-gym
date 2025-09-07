@@ -57,14 +57,8 @@ const SidebarCoach = () => {
           <MessageCircle size={20} />
           <span>Messages</span>
         </Link>
-   
-
-   
-       
-        {/* Add Exercise */}
       </nav>
 
-      {/* Back to Home */}
       <div className='mt-auto pt-4 border-t border-gray-700'>
         <Link
           href={"/clients"}

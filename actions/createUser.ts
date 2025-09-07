@@ -1,38 +1,56 @@
 import { PrismaClient } from '@/lib/generated/prisma';
 const prisma = new PrismaClient();
-
 export async function createUserAction({
   clerkUserId,
   email,
   name,
+  username,
   imageUrl,
+  packageId,
 }: {
   clerkUserId: string;
   email: string;
   name?: string;
+  username: string; 
   imageUrl?: string;
+  packageId?: number;
 }) {
   try {
-    const user = await prisma.user.upsert({
+    const existingUser = await prisma.user.findUnique({
       where: { clerkUserId },
-      update: {
-        email,
-        name,
-        imageUrl,
-      },
-      create: {
-        clerkUserId,
-        email,
-        name,
-        imageUrl,
-        subscriptionActive: true,
-        isAdmin: email === "elaliomar30@gmail.com@example.com", 
-      },
     });
+
+    let user;
+
+    if (existingUser) {
+      user = await prisma.user.update({
+        where: { clerkUserId },
+        data: {
+          name,
+          username,
+          imageUrl,
+          selectedPackageId: packageId ?? existingUser.selectedPackageId,
+          subscriptionActive: packageId ? true : existingUser.subscriptionActive,
+        },
+      });
+    } else {
+      user = await prisma.user.create({
+        data: {
+          clerkUserId,
+          email,
+          name,
+          username,
+          imageUrl,
+          selectedPackageId: packageId ?? undefined,
+          subscriptionActive: packageId ? true : false,
+          isAdmin: email === "elaliomar30@gmail.com",
+        },
+      });
+    }
 
     return user;
   } catch (error) {
-    console.error('Error creating/updating user:', error);
+    console.error("Error creating/updating user:", error);
     throw error;
   }
 }

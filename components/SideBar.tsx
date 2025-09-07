@@ -17,7 +17,7 @@ const Sidebar = () => {
   const [listOpen, setListOpen] = useState(false)
 
   return (
-    <aside className='h-screen w-64 bg-gray-900 text-white flex flex-col p-4 shadow-xl'>
+    <aside className='h-screen w-64 bg-gray-900 text-white flex flex-col p-4 overflow-auto shadow-xl'>
       <h2 className='text-2xl font-bold mb-8 text-center text-red-500 tracking-wide'>
         Admin Panel
       </h2>
@@ -90,7 +90,6 @@ const Sidebar = () => {
           <span>Add Muscle Type</span>
         </Link>
 
-        {/* Dropdown List */}
         <button
           onClick={() => setListOpen(!listOpen)}
           className='flex items-center justify-between w-full px-4 py-2 rounded-lg hover:bg-gray-700 transition-all duration-200'
@@ -108,18 +107,27 @@ const Sidebar = () => {
           </span>
         </button>
 
-        {/* Dropdown content */}
         {listOpen && (
           <div className='flex flex-col ml-6 mt-1 gap-1'>
             <Link
-              href='/dashboard/coaches'
+              href='/dashboard/list-coach'
               className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 ${
-                pathname === "/dashboard/coaches"
+                pathname === "/dashboard/list-coach"
                   ? "bg-red-600 font-semibold shadow-inner"
                   : "hover:bg-gray-700"
               }`}
             >
               Coaches
+            </Link>
+            <Link
+              href='/dashboard/list-muscle'
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 ${
+                pathname === "/dashboard/list-muscle"
+                  ? "bg-red-600 font-semibold shadow-inner"
+                  : "hover:bg-gray-700"
+              }`}
+            >
+              Muscles
             </Link>
             <Link
               href='/dashboard/list-exercises'
@@ -132,9 +140,9 @@ const Sidebar = () => {
               Exercises
             </Link>
             <Link
-              href='/dashboard/workType'
+              href='/dashboard/list-workout'
               className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 ${
-                pathname === "/dashboard/workType"
+                pathname === "/dashboard/list-workout"
                   ? "bg-red-600 font-semibold shadow-inner"
                   : "hover:bg-gray-700"
               }`}
@@ -142,32 +150,21 @@ const Sidebar = () => {
               Workout Types
             </Link>
             <Link
-              href='/dashboard/subscriptions'
+              href='/dashboard/list-sub'
               className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 ${
-                pathname === "/dashboard/subscriptions"
+                pathname === "/dashboard/list-sub"
                   ? "bg-red-600 font-semibold shadow-inner"
                   : "hover:bg-gray-700"
               }`}
             >
               Subscriptions
             </Link>
-            <Link
-              href='/dashboard/types'
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 ${
-                pathname === "/dashboard/types"
-                  ? "bg-red-600 font-semibold shadow-inner"
-                  : "hover:bg-gray-700"
-              }`}
-            >
-              Type Exercises
-            </Link>
+            
           </div>
         )}
 
-        {/* Add Exercise */}
       </nav>
 
-      {/* Back to Home */}
       <div className='mt-auto pt-4 border-t border-gray-700'>
         <Link
           href={"/clients"}

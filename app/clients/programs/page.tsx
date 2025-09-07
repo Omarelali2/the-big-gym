@@ -23,7 +23,6 @@ type Muscle = {
   imageUrl?: string | null
   iconUrl?: string | null
   workoutId?: string | null
-  subMuscles: SubMuscle[]
   exercises: Exercise[]
 }
 
@@ -34,6 +33,7 @@ type WorkoutType = {
 
 export default function MusclesPage() {
   const router = useRouter()
+
   const searchParams = useSearchParams()
   const { user, isSignedIn } = useUser()
 
@@ -50,7 +50,6 @@ export default function MusclesPage() {
     async function loadData() {
       if (!user) return
 
-      // جلب العضلات
       const res = await getMuscles()
       if (res.success) setMuscles(res.muscles as Muscle[])
 
@@ -60,7 +59,6 @@ export default function MusclesPage() {
       const subData = await getUserSubscription(user.id)
       setSubscriptionActive(subData.subscriptionActive || subData.isAdmin)
 
-      // 🔥 هون منقرأ الـ workout من URL
       const workoutFromUrl = searchParams.get("workout")
       if (workoutFromUrl) {
         setSelectedWorkout(workoutFromUrl)
@@ -79,41 +77,68 @@ export default function MusclesPage() {
       setShowAlert(true)
     }
   }
+  if (!isSignedIn) {
+    return (
+      <div className='flex flex-col items-center justify-center h-[60vh] text-center'>
+        <h2 className='text-3xl md:text-4xl font-extrabold text-red-500 mb-4'>
+          ⚠️ Access Denied
+        </h2>
+        <p className='text-gray-300 text-lg mb-6'>
+          You need to log in to view our exclusive plans.
+        </p>
+      </div>
+    )
+  }
+  if (loading)
+    return (
+      <div className='flex items-center justify-center mt-20 min-h-[60vh]'>
+        <div className='w-16 h-16 border-4 border-red-600 border-t-transparent border-solid rounded-full animate-spin'></div>
+        <span className='ml-4 text-white text-lg font-semibold'>
+          Loading...
+        </span>
+      </div>
+    )
 
-  if (!isSignedIn || loading) return <div>Loading...</div>
-
-  const filteredMuscles = muscles.filter((m) => {
+  const filteredMuscles = muscles.filter(m => {
     const matchMuscle = selectedMuscle ? m.name === selectedMuscle : true
-    const matchWorkout = selectedWorkout ? m.workoutId === selectedWorkout : true
+    const matchWorkout = selectedWorkout
+      ? m.workoutId === selectedWorkout
+      : true
     return matchMuscle && matchWorkout
   })
 
-  const muscleOptions = Array.from(new Set(muscles.map((m) => m.name)))
+  const muscleOptions = Array.from(new Set(muscles.map(m => m.name)))
 
   return (
-    <div className='px-10 py-10 bg-gradient-to-b min-h-screen'>
-      <h1 className='text-5xl font-bold mb-10 text-center text-white'>All Muscles</h1>
+    <div className='px-10 mt-15 py-10 bg-gradient-to-b min-h-screen'>
+      <h1 className='text-5xl font-bold mb-10 text-center text-white'>
+        All Muscles
+      </h1>
 
-      <div className="flex flex-wrap gap-4 mb-6 justify-center">
+      <div className='flex flex-wrap gap-4 mb-6 justify-center'>
         <select
           value={selectedMuscle || ""}
-          onChange={(e) => setSelectedMuscle(e.target.value || null)}
-          className="p-2 rounded-md bg-gray-800 text-white border border-red-600"
+          onChange={e => setSelectedMuscle(e.target.value || null)}
+          className='p-2 rounded-md bg-gray-800 text-white border border-red-600'
         >
-          <option value="">All Muscles</option>
-          {muscleOptions.map((m) => (
-            <option key={m} value={m}>{m}</option>
+          <option value=''>All Muscles</option>
+          {muscleOptions.map(m => (
+            <option key={m} value={m}>
+              {m}
+            </option>
           ))}
         </select>
 
         <select
           value={selectedWorkout || ""}
-          onChange={(e) => setSelectedWorkout(e.target.value || null)}
-          className="p-2 rounded-md bg-gray-800 text-white border border-orange-600"
+          onChange={e => setSelectedWorkout(e.target.value || null)}
+          className='p-2 rounded-md bg-gray-800 text-white border border-orange-600'
         >
-          <option value="">All Workouts</option>
-          {workouts.map((w) => (
-            <option key={w.id} value={w.id}>{w.name}</option>
+          <option value=''>All Workouts</option>
+          {workouts.map(w => (
+            <option key={w.id} value={w.id}>
+              {w.name}
+            </option>
           ))}
         </select>
       </div>
@@ -143,7 +168,9 @@ export default function MusclesPage() {
               />
             )}
             {m.description && (
-              <p className='text-gray-200 text-sm mb-2 line-clamp-2'>{m.description}</p>
+              <p className='text-gray-200 text-sm mb-2 line-clamp-2'>
+                {m.description}
+              </p>
             )}
             <div className='flex justify-between items-center mb-2'>
               <span className='text-white font-semibold bg-orange-600 px-2 py-1 rounded-full text-xs'>
@@ -157,8 +184,12 @@ export default function MusclesPage() {
       {showAlert && (
         <div className='fixed inset-0 bg-black/70 flex items-center justify-center z-50 animate-fadeIn'>
           <div className='bg-gradient-to-br from-gray-800 via-gray-900 to-black p-8 rounded-2xl text-center max-w-sm shadow-2xl border-2 border-red-500'>
-            <h2 className='text-3xl font-extrabold text-red-500 mb-4 drop-shadow-lg'>⚠️ Access Denied</h2>
-            <p className='text-white mb-6 text-sm md:text-base'>You need to subscribe to access this content.</p>
+            <h2 className='text-3xl font-extrabold text-red-500 mb-4 drop-shadow-lg'>
+              ⚠️ Access Denied
+            </h2>
+            <p className='text-white mb-6 text-sm md:text-base'>
+              You need to subscribe to access this content.
+            </p>
             <button
               onClick={() => setShowAlert(false)}
               className='bg-red-600 px-6 py-3 rounded-full font-semibold hover:bg-red-700 transition-colors duration-300 shadow-md'

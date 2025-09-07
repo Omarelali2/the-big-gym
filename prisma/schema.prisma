@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
   output   = "../lib/generated/prisma"
@@ -28,7 +22,10 @@ model Package {
   offerActive Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  users       User[]
 }
+
+
 
 model WorkoutType {
   id          String   @id @default(cuid())
@@ -52,7 +49,6 @@ model Muscle {
   workoutId   String?
   workout     WorkoutType? @relation(fields: [workoutId], references: [id])
 
-  subMuscles SubMuscle[]
 
   exercises Exercise[]
 
@@ -60,20 +56,27 @@ model Muscle {
   updatedAt DateTime @updatedAt
 }
 
-model SubMuscle {
-  id          String  @id @default(cuid())
-  name        String
-  slug        String  @unique
-  description String?
-  imageUrl    String?
+model Coach {
+  id         String  @id @default(cuid())
+  name       String
+  email      String  @unique @default("temp@example.com")
+  imageUrl   String?
+  password   String  @default("changeme")
+  speciality String  @default("N/A")
+  degree     String  @default("N/A")
+  experience String  @default("N/A")
+  about      String  @default("N/A")
+  fees       String  @default("0")
+  address    Json    @default("{}")
+  date       Int     @default(0)
+  available  Boolean @default(true)
 
-  muscleId String
-  muscle   Muscle @relation(fields: [muscleId], references: [id])
-
-  exercises Exercise[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  slotsBooked Json         @default("{}")
+  workoutId   String?
+  workout     WorkoutType? @relation(fields: [workoutId], references: [id])
+  chats       Chat[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
 }
 
 model Exercise {
@@ -101,8 +104,6 @@ model Exercise {
   muscleId String?
   muscle   Muscle? @relation(fields: [muscleId], references: [id])
 
-  subMuscleId String?
-  subMuscle   SubMuscle? @relation(fields: [subMuscleId], references: [id])
 }
 
 model ExerciseComment {
@@ -115,6 +116,41 @@ model ExerciseComment {
   userId String?
 
   createdAt DateTime @default(now())
+}
+model User {
+  id                 String       @id @default(uuid())
+  clerkUserId        String       @unique
+  email              String       @unique
+  username           String?      @unique 
+  name               String?
+  imageUrl           String?
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+  subscriptionActive Boolean      @default(false)
+  selectedWorkoutId  String?
+  selectedWorkout    WorkoutType? @relation(fields: [selectedWorkoutId], references: [id])
+  chats              Chat[]
+  isAdmin            Boolean      @default(false)
+  phoneNumber        String?
+  address            String?
+  bio                String?
+  selectedPackageId  Int? // 🔹 FK للباقة اللي اختارها المستخدم
+  selectedPackage    Package?     @relation(fields: [selectedPackageId], references: [id])
+
+  height          Float? // cm
+  weight          Float? // kg
+  bodyFat         Float? // %
+  muscleMass      Float? // kg
+  activityLevel   String? // "Sedentary" | "Light" | "Moderate" | "Active" | "VeryActive"
+  fitnessGoal     String? // "LoseWeight" | "GainMuscle" | "Maintain" | "Endurance"
+  experienceLevel String?
+
+  exerciseComments  ExerciseComment[]
+  exerciseRatings   ExerciseRating[]
+  favoriteExercises Exercise[]        @relation("UserFavorites")
+
+  // 🔹 مرتبط بالـ daily calories
+  dailyCalories DailyCalories[]
 }
 
 model ExerciseRating {
@@ -129,68 +165,28 @@ model ExerciseRating {
   createdAt DateTime @default(now())
 }
 
-model User {
-  id                 String   @id @default(uuid())
-  clerkUserId        String   @unique
-  email              String   @unique
-  name               String?
-  imageUrl           String?
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
-  subscriptionActive Boolean  @default(false)
-  selectedWorkoutId  String?
-  selectedWorkout    WorkoutType? @relation(fields: [selectedWorkoutId], references: [id])
-  chats              Chat[]
-  isAdmin            Boolean @default(false)
+model DailyCalories {
+  id     String   @id @default(uuid())
+  userId String
+  user   User     @relation(fields: [userId], references: [id])
+  date   DateTime @default(now())
+  intake Int      @default(0)
+  burned Int      @default(0)
 
-  // ======================
-  // Fitness & Health Data
-  // ======================
-  height          Float? // cm
-  weight          Float? // kg
-  bodyFat         Float? // %
-  muscleMass      Float? // kg
-  activityLevel   String? // "Sedentary" | "Light" | "Moderate" | "Active" | "VeryActive"
-  fitnessGoal     String? // "LoseWeight" | "GainMuscle" | "Maintain" | "Endurance"
-  experienceLevel String? // "Beginner" | "Intermediate" | "Advanced"
-
-  exerciseComments  ExerciseComment[]
-  exerciseRatings   ExerciseRating[]
-  favoriteExercises Exercise[] @relation("UserFavorites")
+  @@unique([userId, date])
 }
 
 
-model Coach {
-  id         String  @id @default(cuid())
-  name       String
-  email      String  @unique @default("temp@example.com")
-  imageUrl   String?
-  password   String  @default("changeme")
-  speciality String  @default("N/A")
-  degree     String  @default("N/A")
-  experience String  @default("N/A")
-  about      String  @default("N/A")
-  fees       String  @default("0")
-  address    Json    @default("{}")
-  date       Int     @default(0)
-  available  Boolean @default(true)
-
-  slotsBooked Json         @default("{}")
-  workoutId   String?
-  workout     WorkoutType? @relation(fields: [workoutId], references: [id])
-  chats       Chat[]
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-}
 
 model Message {
   id        String   @id @default(cuid())
   chatId    String
-  sender    String // ممكن تعمل enum ["USER", "COACH"] بدل string
-  text      String? // Nullable، يعني لازم تتأكد قبل ما تعرضه في الـ frontend
+  sender    String
+  text      String?
   imageUrl  String?
   chat      Chat     @relation(fields: [chatId], references: [id])
   createdAt DateTime @default(now())
+  read      Boolean  @default(false)
 }
 
 model Chat {
@@ -201,5 +197,5 @@ model Chat {
   coach     Coach     @relation(fields: [coachId], references: [id])
   messages  Message[]
   createdAt DateTime  @default(now())
-  updatedAt DateTime  @default(now()) // حوّلها من @updatedAt إذا حبيت يكون auto
+  updatedAt DateTime  @default(now())
 }
