@@ -15,18 +15,19 @@ interface Coach {
 
 const CoachingSlider = ({ userPackageName }: Props) => {
   const [coaches, setCoaches] = useState<Coach[]>([])
-  const [current, setCurrent] = useState(0)
+  const [current] = useState(0)
   const itemsPerPage = 4
 
   useEffect(() => {
     async function fetchData() {
       const data = await getAllCoaches()
+      console.log(data)
 
       const mappedData: Coach[] = data.map(c => ({
-        id: c.id, 
-        name: c.workout?.name || "No Name",
-        speciality: "Speciality Placeholder", 
-        imageUrl: c.workout?.images[0] || "/default-coach.png",
+        id: c.id,
+        name: c.name, // اسم الكوتش
+        speciality: c.speciality || "Speciality Placeholder",
+        imageUrl: c.imageUrl || "/default-coach.png",
       }))
 
       setCoaches(mappedData)

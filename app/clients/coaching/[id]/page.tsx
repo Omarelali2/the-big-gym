@@ -14,7 +14,7 @@ interface Coach {
   speciality: string
   degree: string
   experience: string
-  fees: string // خليها string
+  fees: string
   about: string
   imageUrl?: string | null
   workout?: Workout | null
@@ -25,15 +25,13 @@ interface CoachResult {
   coach: Coach | null
 }
 
-interface CoachPageProps {
+interface PageProps {
   params: {
     id: string
   }
 }
 
-export default async function CoachDetail({
-  params,
-}: CoachPageProps): Promise<React.ReactNode> {
+export default async function CoachDetail({ params }: PageProps) {
   const { id } = params
 
   const result: CoachResult = await getCoachById(id)
@@ -59,6 +57,7 @@ export default async function CoachDetail({
             width={48}
             height={48}
             src={coach.imageUrl}
+            unoptimized
             alt={coach.name}
             className='w-72 h-72 md:w-80 md:h-80 rounded-full object-cover border-4 border-orange-400 shadow-2xl transition-transform duration-500 group-hover:scale-105 group-hover:rotate-1'
           />

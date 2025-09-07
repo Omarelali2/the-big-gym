@@ -7,8 +7,8 @@ import {
   getExerciseById,
   getExerciseStats,
   getUserByClerkId,
+  getCoachesByWorkout,
 } from "@/lib/data"
-import { getCoachesByWorkout } from "@/lib/data"
 import { Clock, Dumbbell, Activity, Star } from "lucide-react"
 import { useUser } from "@clerk/nextjs"
 import { addExerciseComment } from "@/lib/action"
@@ -20,17 +20,6 @@ type ExerciseComment = {
   content: string
   userId?: string
   createdAt: string
-}
-interface User {
-  id: string
-  clerkUserId: string
-  email: string
-  username?: string | null
-  name?: string | null
-  imageUrl?: string | null
-  createdAt: Date
-  updatedAt: Date
-  subscriptionActive: boolean
 }
 
 type ExerciseRating = {
@@ -58,7 +47,7 @@ type Exercise = {
   comments?: ExerciseComment[]
 }
 
-export type UserReview = {
+type UserReview = {
   userId?: string
   username: string
   userImage?: string
@@ -73,6 +62,14 @@ type ExerciseStatsState = {
   reviews: UserReview[]
 } | null
 
+type User = {
+  id: string
+  clerkUserId: string
+  username?: string | null
+  name?: string | null
+  imageUrl?: string | null
+}
+
 type Coach = {
   id: string
   name: string
@@ -82,6 +79,33 @@ type Coach = {
   fees: string
   imageUrl?: string
 }
+type ExerciseAPIResponse = {
+  id: string
+  title: string
+  description?: string | null
+  images?: string[]
+  videoUrl?: string | null
+  difficulty?: string
+  duration?: number | null
+  reps?: number | null
+  sets?: number | null
+  category?: string | null
+  tags?: string[]
+  equipment?: string | null
+  workoutId?: string | null
+  ratings?: {
+    id: string
+    rating: number
+    userId?: string | null
+    createdAt: Date
+  }[]
+  comments?: {
+    id: string
+    content: string
+    userId?: string | null
+    createdAt: Date
+  }[]
+}
 
 export default function ExerciseDetailPage() {
   const params = useParams()
@@ -90,22 +114,24 @@ export default function ExerciseDetailPage() {
   const [exercise, setExercise] = useState<Exercise | null>(null)
   const [coaches, setCoaches] = useState<Coach[]>([])
   const [loading, setLoading] = useState(true)
-  const [loadingCoaches, setLoadingCoaches] = useState(true)
-
+  const [loadingStats, setLoadingStats] = useState(true)
+  const [stats, setStats] = useState<ExerciseStatsState>(null)
+  const [dbUser, setDbUser] = useState<User | null>(null)
   const [newComment, setNewComment] = useState("")
   const [newRating, setNewRating] = useState(0)
 
-  const [stats, setStats] = useState<ExerciseStatsState>(null)
-  const [loadingStats, setLoadingStats] = useState(true)
-
-  const [dbUser, setDbUser] = useState<User | null>(null)
-
+  // Fetch DB user
   useEffect(() => {
-    if (!user) return
+    if (!user) return // إذا ما في user، نوقف الفنكشن
 
     async function fetchDbUser() {
       try {
-        const dbUser = await getUserByClerkId(user!.id)
+        // نأكد إن user موجود
+        const userId = user?.id
+        if (!userId) return
+
+        const dbUser = await getUserByClerkId(userId)
+
         if (dbUser) setDbUser(dbUser)
       } catch (err) {
         console.error("Failed to fetch DB user:", err)
@@ -115,59 +141,92 @@ export default function ExerciseDetailPage() {
     fetchDbUser()
   }, [user])
 
+  // Fetch exercise, stats, and coaches
   useEffect(() => {
-    async function fetchStats() {
+    async function fetchData() {
       const id = Array.isArray(params.id) ? params.id[0] : params.id
-      if (!id) {
-        setLoadingStats(false)
-        return
-      }
+      if (!id) return setLoading(false)
 
       try {
-        const s = await getExerciseStats(id)
+        // Exercise
+        const res = await getExerciseById(id)
+        if (res.success && res.exercise) {
+          const e: ExerciseAPIResponse = res.exercise
+          setExercise({
+            id: e.id,
+            title: e.title,
+            description: e.description ?? null,
+            images: e.images ?? [],
+            videoUrl: e.videoUrl ?? null,
+            difficulty: e.difficulty ?? "Beginner",
+            duration: e.duration ?? null,
+            reps: e.reps ?? null,
+            sets: e.sets ?? null,
+            category: e.category ?? null,
+            tags: e.tags ?? [],
+            equipment: e.equipment ?? null,
+            workoutId: e.workoutId ?? null, // هون صار آمن
+            ratings:
+              e.ratings?.map(r => ({
+                id: r.id,
+                rating: r.rating,
+                userId: r.userId ?? undefined,
+                createdAt: r.createdAt.toISOString(),
+              })) ?? [],
+            comments:
+              e.comments?.map(c => ({
+                id: c.id,
+                content: c.content,
+                userId: c.userId ?? undefined,
+                createdAt: c.createdAt.toISOString(),
+              })) ?? [],
+          })
 
-        const normalized: ExerciseStatsState = {
-          ...s,
+          // Coaches
+          if (e.workoutId) {
+            const cRes = await getCoachesByWorkout(e.workoutId)
+            if (cRes.success && cRes.coaches) {
+              setCoaches(
+                cRes.coaches.map(c => ({
+                  id: c.id,
+                  name: c.name,
+                  speciality: c.speciality,
+                  degree: c.degree,
+                  experience: c.experience,
+                  fees: c.fees,
+                }))
+              )
+            }
+          }
+        }
+
+        // Stats
+        const s = await getExerciseStats(id)
+        setStats({
+          averageRating: s.averageRating,
+          numReviews: s.numReviews,
           reviews: s.reviews.map(r => ({
             userId: r.userId,
             username: r.username,
-            comment: r.comment ?? "",
-            rating: r.rating ?? 0,
+            comment: r.comment ?? "", // هون صار string دائمًا
+            rating: r.rating ?? 0, // هون صار number دائمًا
             createdAt: r.createdAt,
           })),
-        }
-
-        setStats(normalized)
+        })
       } catch (err) {
-        console.error("Error fetching exercise stats:", err)
-        setStats(null)
+        console.error(err)
       } finally {
+        setLoading(false)
         setLoadingStats(false)
       }
     }
-
-    fetchStats()
-  }, [params.id])
-
-  useEffect(() => {
-    async function fetchExercise() {
-      const id = Array.isArray(params.id) ? params.id[0] : params.id
-      if (!id) {
-        setLoading(false)
-        return
-      }
-
-      const res = await getExerciseById(id)
-      setLoading(false)
-    }
-    fetchExercise()
+    fetchData()
   }, [params.id])
 
   const handleSubmit = async () => {
     if (!exercise) return toast.error("Exercise not loaded yet")
     if (!newComment.trim()) return toast.error("Comment cannot be empty")
     if (newRating <= 0) return toast.error("Please provide a rating")
-
     try {
       const { comment, exerciseRating } = await addExerciseComment({
         userId: user!.id,
@@ -201,6 +260,7 @@ export default function ExerciseDetailPage() {
         }
       })
 
+      // Update stats
       setStats(prev => {
         if (!prev) return null
         const newReview = {
@@ -212,7 +272,7 @@ export default function ExerciseDetailPage() {
           createdAt: comment.createdAt.toISOString(),
         }
         const allRatings = [
-          ...(exercise.ratings ?? []),
+          ...(exercise?.ratings ?? []),
           { rating: exerciseRating.rating },
         ]
         const avgRating =
@@ -221,7 +281,6 @@ export default function ExerciseDetailPage() {
               allRatings.length) *
               10
           ) / 10
-
         return {
           ...prev,
           reviews: [...prev.reviews, newReview],
@@ -232,119 +291,12 @@ export default function ExerciseDetailPage() {
 
       setNewComment("")
       setNewRating(0)
-      toast.success("Comment and rating added successfully!")
+      toast.success("Comment added successfully!")
     } catch (err) {
-      console.error("Failed to add comment:", err)
+      console.error(err)
+      toast.error("Failed to add comment")
     }
   }
-
-  type RawExerciseFromAPI = {
-    id: string
-    title: string
-    description?: string | null
-    images?: string[]
-    videoUrl?: string | null
-    difficulty?: string
-    duration?: number | null
-    reps?: number | null
-    sets?: number | null
-    category?: string | null
-    tags?: string[]
-    equipment?: string | null
-    workoutId?: string | null
-    ratings?: {
-      id: string
-      rating: number
-      userId?: string | null
-      createdAt: Date
-    }[]
-    comments?: {
-      id: string
-      content: string
-      userId?: string | null
-      createdAt: Date
-    }[]
-  }
-
-  useEffect(() => {
-    async function fetchExerciseAndCoaches() {
-      const id = Array.isArray(params.id) ? params.id[0] : params.id
-      if (!id) {
-        setLoading(false)
-        setLoadingCoaches(false)
-        return
-      }
-
-      try {
-        const res = await getExerciseById(id)
-        if (res.success && res.exercise) {
-          const rawExercise: RawExerciseFromAPI = res.exercise
-
-          const normalizedExercise: Exercise = {
-            id: rawExercise.id,
-            title: rawExercise.title,
-            description: rawExercise.description ?? null,
-            images: rawExercise.images ?? [],
-            videoUrl: rawExercise.videoUrl ?? null,
-            difficulty: rawExercise.difficulty ?? "Beginner",
-            duration: rawExercise.duration ?? null,
-            reps: rawExercise.reps ?? null,
-            sets: rawExercise.sets ?? null,
-            category: rawExercise.category ?? null,
-            tags: rawExercise.tags ?? [],
-            equipment: rawExercise.equipment ?? null,
-            workoutId: rawExercise.workoutId ?? null,
-            ratings:
-              rawExercise.ratings?.map(r => ({
-                id: r.id,
-                rating: r.rating,
-                userId: r.userId ?? undefined,
-                createdAt: r.createdAt.toISOString(),
-              })) ?? [],
-            comments:
-              rawExercise.comments?.map(c => ({
-                id: c.id,
-                content: c.content,
-                userId: c.userId ?? undefined,
-                createdAt: c.createdAt.toISOString(),
-              })) ?? [],
-          }
-
-          setExercise(normalizedExercise)
-
-          if (normalizedExercise.workoutId) {
-            const coachesRes = await getCoachesByWorkout(
-              normalizedExercise.workoutId
-            )
-            if (coachesRes.success && coachesRes.coaches) {
-              const normalizedCoaches: Coach[] = coachesRes.coaches.map(c => ({
-                id: c.id,
-                name: c.name,
-                speciality: c.speciality,
-                degree: c.degree,
-                experience: c.experience,
-                fees: c.fees,
-              }))
-              setCoaches(normalizedCoaches)
-            } else {
-              setCoaches([])
-            }
-          } else {
-            setCoaches([])
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching exercise or coaches:", error)
-        setExercise(null)
-        setCoaches([])
-      } finally {
-        setLoading(false)
-        setLoadingCoaches(false)
-      }
-    }
-
-    fetchExerciseAndCoaches()
-  }, [params.id])
 
   if (loading)
     return (
@@ -363,17 +315,9 @@ export default function ExerciseDetailPage() {
       </div>
     )
 
-  const userHasCommented = exercise?.comments?.some(c => c.userId === user?.id)
-
-  {
-    !userHasCommented ? (
-      <div className='bg-gray-800 p-6 rounded-3xl shadow-xl mb-10'></div>
-    ) : (
-      <p className='text-yellow-400'>
-        You have already submitted a comment for this exercise.
-      </p>
-    )
-  }
+  const userHasCommented = exercise?.comments?.some(
+    c => c.userId === dbUser?.id
+  )
 
   return (
     <div className='px-6 md:px-16 lg:px-24 mt-15 py-10 min-h-screen rounded-3xl bg-gradient-to-b from-gray-900 to-gray-800 text-white shadow-2xl shadow-gray-900/80 ring-1 ring-gray-700'>
@@ -396,6 +340,7 @@ export default function ExerciseDetailPage() {
               <Image
                 width={48}
                 height={48}
+                unoptimized
                 src={img ?? "/placeholder.png"}
                 alt={`${exercise.title}-${idx}`}
                 className='w-full h-full object-cover transform hover:scale-105 transition duration-500'
@@ -410,6 +355,7 @@ export default function ExerciseDetailPage() {
       </h1>
       <p className='text-gray-300 text-lg mb-10'>{exercise.description}</p>
 
+      {/* Exercise info */}
       <div className='grid grid-cols-2 md:grid-cols-4 gap-6 mb-12'>
         {[
           {
@@ -451,6 +397,7 @@ export default function ExerciseDetailPage() {
         })}
       </div>
 
+      {/* Stats */}
       <div className='bg-gradient-to-r bg-gray-800 p-6 rounded-3xl shadow-2xl mb-12'>
         <h2 className='text-3xl font-extrabold mb-5 text-white'>Ratings</h2>
         <div className='flex items-center gap-3 mb-4'>
@@ -478,13 +425,12 @@ export default function ExerciseDetailPage() {
               <div className='flex items-center gap-4'>
                 <p className='font-semibold text-white'>{r.username}</p>
               </div>
-
               <p className='text-gray-300'>{r.comment}</p>
               <p className='text-yellow-400'>Rating: {r.rating}/5</p>
             </div>
           ))}
 
-          {dbUser && exercise?.comments?.some(c => c.userId === dbUser.id) && (
+          {dbUser && userHasCommented && (
             <button
               className='mt-4 px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700'
               onClick={async () => {
@@ -508,34 +454,7 @@ export default function ExerciseDetailPage() {
                         ),
                       }
                     })
-
-                    setStats(prev => {
-                      if (!prev) return null
-                      const newReviews = prev.reviews.filter(
-                        r => r.userId !== dbUser?.id
-                      )
-                      const allRatings =
-                        exercise?.ratings?.filter(
-                          r => r.userId !== dbUser?.id
-                        ) ?? []
-                      const avgRating = allRatings.length
-                        ? Math.round(
-                            (allRatings.reduce((acc, r) => acc + r.rating, 0) /
-                              allRatings.length) *
-                              10
-                          ) / 10
-                        : 0
-
-                      return {
-                        ...prev,
-                        reviews: newReviews,
-                        numReviews: newReviews.length,
-                        averageRating: avgRating,
-                      }
-                    })
-                  } else {
-                    toast.error("No review found to delete")
-                  }
+                  } else toast.error("No review found to delete")
                 } catch (err) {
                   console.error(err)
                   toast.error("Failed to delete review")
@@ -548,35 +467,65 @@ export default function ExerciseDetailPage() {
         </div>
       </div>
 
-      <div className='bg-gray-800 p-6 rounded-3xl shadow-xl mb-10'>
-        <h2 className='text-2xl font-bold mb-4 text-white'>
-          Add Your Feedback
-        </h2>
-        <div className='flex gap-2 mb-4'>
-          {[1, 2, 3, 4, 5].map(i => (
-            <Star
-              key={i}
-              onClick={() => setNewRating(i)}
-              className={`w-8 h-8 cursor-pointer transition-transform duration-200 ${
-                i <= newRating ? "text-yellow-400 scale-110" : "text-gray-600"
-              }`}
-            />
-          ))}
+      {/* Add comment */}
+      {!userHasCommented && (
+        <div className='bg-gray-800 p-6 rounded-3xl shadow-xl mb-10'>
+          <h2 className='text-2xl font-bold mb-4 text-white'>
+            Add Your Feedback
+          </h2>
+          <div className='flex gap-2 mb-4'>
+            {[1, 2, 3, 4, 5].map(i => (
+              <Star
+                key={i}
+                onClick={() => setNewRating(i)}
+                className={`w-8 h-8 cursor-pointer transition-transform duration-200 ${
+                  i <= newRating ? "text-yellow-400 scale-110" : "text-gray-600"
+                }`}
+              />
+            ))}
+          </div>
+          <textarea
+            value={newComment}
+            onChange={e => setNewComment(e.target.value)}
+            placeholder='Write your comment...'
+            className='w-full p-3 rounded-xl bg-gray-700 text-white placeholder-gray-400 resize-none'
+            rows={4}
+          />
+          <button
+            onClick={handleSubmit}
+            className='mt-4 bg-yellow-400 text-gray-900 px-6 py-2 rounded-xl font-semibold hover:scale-105 transition-transform'
+          >
+            Submit
+          </button>
         </div>
-        <textarea
-          value={newComment}
-          onChange={e => setNewComment(e.target.value)}
-          placeholder='Write your comment...'
-          className='w-full p-3 rounded-xl bg-gray-700 text-white placeholder-gray-400 resize-none'
-          rows={4}
-        />
-        <button
-          onClick={handleSubmit}
-          className='mt-4 bg-yellow-400 text-gray-900 px-6 py-2 rounded-xl font-semibold hover:scale-105 transition-transform'
-        >
-          Submit
-        </button>
-      </div>
+      )}
+
+      {/* Coaches */}
+      {coaches.length > 0 && (
+        <div className='bg-gray-800 p-6 rounded-3xl shadow-xl'>
+          <h2 className='text-3xl font-bold mb-6'>Coaches</h2>
+          <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6'>
+            {coaches.map(c => (
+              <div
+                key={c.id}
+                className='bg-gray-700 p-4 rounded-xl shadow-lg flex flex-col items-center'
+              >
+                <Image
+                  width={100}
+                  height={100}
+                  src={c.imageUrl ?? "/placeholder.png"}
+                  alt={c.name}
+                  className='rounded-full mb-4 object-cover w-24 h-24'
+                />
+                <h3 className='text-white font-semibold'>{c.name}</h3>
+                <p className='text-gray-300'>{c.speciality}</p>
+                <p className='text-gray-400'>{c.degree}</p>
+                <p className='text-yellow-400 font-semibold'>Fees: {c.fees}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

@@ -145,6 +145,7 @@ export default function MuscleDetailPage() {
                 <Image
                   width={48}
                   height={48}
+                  unoptimized
                   src={ex.images[0] ?? "/placeholder.png"}
                   alt={ex.title ?? "Exercise image"}
                   className='w-full h-full object-cover transition-transform duration-500 group-hover:scale-110'

@@ -47,6 +47,7 @@ export default async function CoachesPage() {
             <Image
               src={coach.imageUrl}
               alt={coach.name}
+              unoptimized
               width={100}
               height={100}
               className='rounded-full mb-3 object-cover'

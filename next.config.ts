@@ -1,8 +1,7 @@
-// next.config.js
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
-    serverActions: { bodySizeLimit: "50mb" }, 
+    serverActions: { bodySizeLimit: "50mb" },
   },
   images: {
     domains: [
@@ -12,12 +11,12 @@ const nextConfig = {
       "example.com",
       "res.cloudinary.com",
       "plus.unsplash.com",
-      'img.clerk.com',
-      "lh3.googleusercontent.com"
-
+      "img.clerk.com",
+      "lh3.googleusercontent.com",
+      "tse3.mm.bing.net",
+      "i.pravatar.cc",
+      "collegepill.com", // ✅ أضفناه
     ],
-    
-    
   },
 }
 

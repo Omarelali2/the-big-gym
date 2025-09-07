@@ -160,9 +160,10 @@ export default function MusclesPage() {
               <Image
                 width={48}
                 height={48}
-                src={m.imageUrl}
+                src={m.imageUrl || "/default-image.png"} // fallback image
                 alt={m.name}
                 className='w-full h-32 object-cover rounded-md mb-2 hover:scale-105 transition-transform'
+                unoptimized // هيك Next.js ما رح يحاول يعمل optimize
               />
             )}
             {m.description && (

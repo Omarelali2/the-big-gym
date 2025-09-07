@@ -101,6 +101,7 @@ const ToolsSlider = ({ userPackageName }: Props) => {
             >
               <div className='w-full h-48 relative overflow-hidden'>
                 <Image
+                  unoptimized
                   width={48}
                   height={48}
                   src={tool.image}

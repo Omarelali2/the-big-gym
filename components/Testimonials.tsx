@@ -35,7 +35,7 @@ const Testimonials = () => {
   }
 
   return (
-    <div className='relative w-full py-16 text-white '>
+    <div className='relative w-full py-16 text-white'>
       <div className='text-4xl font-extrabold text-center mb-12'>
         <div className='absolute top-1/3 right-0 w-[300px] h-[300px] rounded-full bg-red-600 blur-[180px] opacity-60'></div>
         <div className='absolute top-1/3 left-[-150px] w-[300px] h-[300px] rounded-full bg-orange-500 blur-[180px] opacity-60'></div>
@@ -43,8 +43,7 @@ const Testimonials = () => {
           What Our <span className='text-red-500'>Customers Say</span>
         </h2>
         <p className='text-gray-400 text-lg font-semibold mt-4'>
-          At This Part you can See Few Of The Many Positive reviews Of Our
-          Customers.
+          At This Part you can See Few Of The Many Positive reviews Of Our Customers.
         </p>
       </div>
 
@@ -91,7 +90,7 @@ const Testimonials = () => {
                   <p className='text-gray-300 leading-relaxed'>
                     Choosing to pursue my degree at{' '}
                     <span className='text-red-500 font-semibold'>Edusity</span>{' '}
-                    was one of the best decisions I've ever made. The supportive
+                    was one of the best decisions I&apos;ve ever made. The supportive
                     community, state-of-the-art facilities, and commitment to
                     academic excellence have truly exceeded my expectations.
                   </p>

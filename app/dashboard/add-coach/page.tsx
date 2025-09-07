@@ -29,11 +29,9 @@ export default function CoachPage() {
     const fetchWorkoutTypes = async () => {
       try {
         const result = await getWorkoutTypesAction()
-        if (result.success)
-          setWorkoutTypes(result.workoutTypes ?? [])
+        if (result.success) setWorkoutTypes(result.workoutTypes ?? [])
         else console.error("Failed to fetch workout types:", result.error)
-      } catch (err) {
-        console.error(err)
+      } catch (_err) {
         toast.error("Error occurred")
       }
     }

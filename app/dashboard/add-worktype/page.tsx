@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { addWorkoutTypeAction } from "@/lib/action"
 import toast from "react-hot-toast"
+import Image from "next/image"
 
 export default function WorkoutTypePage() {
   const [name, setName] = useState("")
@@ -82,7 +83,9 @@ export default function WorkoutTypePage() {
                     key={idx}
                     className='w-28 h-28 relative border-2 border-gray-600 rounded-lg overflow-hidden'
                   >
-                    <img
+                    <Image
+                      width={48}
+                      height={48}
                       src={url}
                       alt={`preview ${idx}`}
                       className='w-full h-full object-cover'
