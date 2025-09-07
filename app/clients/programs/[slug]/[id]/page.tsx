@@ -131,7 +131,6 @@ export default function ExerciseDetailPage() {
           reviews: s.reviews.map(r => ({
             userId: r.userId,
             username: r.username,
-            userImage: r.userImage ?? "/placeholder.png",
             comment: r.comment ?? "",
             rating: r.rating ?? 0,
             createdAt: r.createdAt,
@@ -306,7 +305,6 @@ export default function ExerciseDetailPage() {
                   degree: c.degree,
                   experience: c.experience,
                   fees: c.fees,
-                  imageUrl: c.imageUrl ?? undefined,
                 })
               )
               setCoaches(normalizedCoaches)
@@ -468,14 +466,6 @@ export default function ExerciseDetailPage() {
               className='bg-gray-700 p-4 rounded-xl mb-4 flex flex-col gap-2'
             >
               <div className='flex items-center gap-4'>
-                <Image
-                  src={r.userImage ?? "/placeholder.png"}
-                  alt={`${r.username}'s profile`}
-                  width={48}
-                  height={48}
-                  className='rounded-full object-cover'
-                />
-
                 <p className='font-semibold text-white'>{r.username}</p>
               </div>
 
