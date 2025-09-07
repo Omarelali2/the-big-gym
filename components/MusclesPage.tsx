@@ -3,7 +3,29 @@
 import { deleteMuscleAction } from "@/lib/data"
 import { useState } from "react"
 
-export default function MusclesPage({ initialMuscles }: { initialMuscles: any[] }) {
+interface Muscle {
+  id: string
+  name: string
+  slug: string
+  description?: string
+  workout?: {
+    id: string
+    name: string
+  }
+  exercises: Exercise[] 
+  imageUrl?: string
+  iconUrl?: string
+  createdAt: string | Date
+  updatedAt: string | Date
+}
+interface Exercise {
+  id: string
+  name: string
+  description?: string
+  imageUrl?: string
+}
+
+export default function MusclesPage({ initialMuscles }: { initialMuscles: Muscle[] }) {
   const [muscles, setMuscles] = useState(initialMuscles)
 
   const handleDelete = async (id: string) => {

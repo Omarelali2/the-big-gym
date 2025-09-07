@@ -14,29 +14,25 @@ const FirstHome = () => {
       <div className='space-y-5 flex items-center flex-col md:items-start md:text-left md:mr-10'>
         <Image src={Frame} alt='Frame' className='w-150' />
         <p className='text-base text-white text-center leading-relaxed max-w-xl mb-4 tracking-wide'>
-          "Join the Fitmaker community and transform your fitness journey. Our
+          &quot;Join the Fitmaker community and transform your fitness journey. Our
           expert coaches and personalized programs are designed to help you
           achieve your goals and exceed your expectations. Ready to make a
-          change?"
+          change?&quot;
         </p>
         <div className='flex gap-8 mt-4 flex-col text-center sm:flex-row'>
           {isSignedIn ? (
-            <>
-              <Link
-                href={"/clients"}
-                className='text-xl pt-4 h-15 ml-43 font-semibold w-50 md:w-70 text-center bg-red-500 rounded-2xl text-white hover:bg-red-600 duration-500 hover:text-gray-200 px-3 py-2 cursor-pointer'
-              >
-                Get Started
-              </Link>
-            </>
+            <Link
+              href={"/clients"}
+              className='text-xl pt-4 h-15 ml-43 font-semibold w-50 md:w-70 text-center bg-red-500 rounded-2xl text-white hover:bg-red-600 duration-500 hover:text-gray-200 px-3 py-2 cursor-pointer'
+            >
+              Get Started
+            </Link>
           ) : (
-            <>
-              <SignInButton>
-                <button className='text-2xl h-20 ml-43 font-semibold w-50 md:w-70 text-center bg-red-500 rounded-2xl text-white hover:bg-red-600 duration-500 hover:text-gray-200 px-3 py-2 cursor-pointer'>
-                  Get Started{" "}
-                </button>
-              </SignInButton>
-            </>
+            <SignInButton>
+              <button className='text-2xl h-20 ml-43 font-semibold w-50 md:w-70 text-center bg-red-500 rounded-2xl text-white hover:bg-red-600 duration-500 hover:text-gray-200 px-3 py-2 cursor-pointer'>
+                Get Started
+              </button>
+            </SignInButton>
           )}
         </div>
       </div>
@@ -49,6 +45,7 @@ const FirstHome = () => {
             className=' w-[450px] rounded-full shadow-[0_25px_50px_rgba(0,0,0,0.6)]'
           />
         </div>
+
         {/* أكاونت الإحصائيات */}
         <div
           className='absolute top-20 left-10 rounded-lg shadow-lg 

@@ -52,9 +52,36 @@ type Exercise = {
   category?: string | null
   tags?: string[]
   equipment?: string | null
-  workoutId?: string
+  workoutId?: string | null
   ratings?: ExerciseRating[]
   comments?: ExerciseComment[]
+}
+type ExerciseFromAPI = {
+  id: string
+  title: string
+  description?: string | null
+  images: string[]
+  videoUrl?: string | null
+  difficulty: string
+  duration?: number | null
+  reps?: number | null
+  sets?: number | null
+  category?: string | null
+  tags?: string[]
+  equipment?: string | null
+  workoutId?: string // نضيف هالخاصية عشان تتوافق
+  ratings?: {
+    id: string
+    rating: number
+    userId?: string | null
+    createdAt: Date
+  }[]
+  comments?: {
+    id: string
+    content: string
+    userId?: string | null
+    createdAt: Date
+  }[]
 }
 
 export type UserReview = {
@@ -237,6 +264,36 @@ export default function ExerciseDetailPage() {
     }
   }
 
+  // نوع الداتا اللي بترجع من الـ API
+  type RawExerciseFromAPI = {
+    id: string
+    title: string
+    description?: string | null
+    images?: string[]
+    videoUrl?: string | null
+    difficulty?: string
+    duration?: number | null
+    reps?: number | null
+    sets?: number | null
+    category?: string | null
+    tags?: string[]
+    equipment?: string | null
+    workoutId?: string | null
+    ratings?: {
+      id: string
+      rating: number
+      userId?: string | null
+      createdAt: Date
+    }[]
+    comments?: {
+      id: string
+      content: string
+      userId?: string | null
+      createdAt: Date
+    }[]
+  }
+
+  // في useEffect
   useEffect(() => {
     async function fetchExerciseAndCoaches() {
       const id = Array.isArray(params.id) ? params.id[0] : params.id
@@ -249,39 +306,35 @@ export default function ExerciseDetailPage() {
       try {
         const res = await getExerciseById(id)
         if (res.success && res.exercise) {
-          const e = res.exercise
+          const rawExercise: RawExerciseFromAPI = res.exercise
 
           const normalizedExercise: Exercise = {
-            id: e.id,
-            title: e.title,
-            description: e.description ?? null,
-            images: e.images ?? [],
-            videoUrl: e.videoUrl ?? null,
-            difficulty: e.difficulty ?? "Beginner",
-            duration: e.duration ?? null,
-            reps: e.reps ?? null,
-            sets: e.sets ?? null,
-            category: e.category ?? null,
-            tags: e.tags ?? [],
-            equipment: e.equipment ?? null,
-            workoutId: (e as any).workoutId ?? null,
+            id: rawExercise.id,
+            title: rawExercise.title,
+            description: rawExercise.description ?? null,
+            images: rawExercise.images ?? [],
+            videoUrl: rawExercise.videoUrl ?? null,
+            difficulty: rawExercise.difficulty ?? "Beginner",
+            duration: rawExercise.duration ?? null,
+            reps: rawExercise.reps ?? null,
+            sets: rawExercise.sets ?? null,
+            category: rawExercise.category ?? null,
+            tags: rawExercise.tags ?? [],
+            equipment: rawExercise.equipment ?? null,
+            workoutId: rawExercise.workoutId ?? null,
             ratings:
-              e.ratings?.map((r: any) => ({
+              rawExercise.ratings?.map(r => ({
                 id: r.id,
                 rating: r.rating,
                 userId: r.userId ?? undefined,
-                createdAt: r.createdAt
-                  ? new Date(r.createdAt).toISOString()
-                  : new Date().toISOString(),
+                createdAt: r.createdAt.toISOString(),
               })) ?? [],
             comments:
-              e.comments?.map((c: any) => ({
+              rawExercise.comments?.map(c => ({
                 id: c.id,
                 content: c.content,
                 userId: c.userId ?? undefined,
-                createdAt: c.createdAt
-                  ? new Date(c.createdAt).toISOString()
-                  : new Date().toISOString(),
+                createdAt: c.createdAt.toISOString(),
               })) ?? [],
           }
 
@@ -291,18 +344,15 @@ export default function ExerciseDetailPage() {
             const coachesRes = await getCoachesByWorkout(
               normalizedExercise.workoutId
             )
-
             if (coachesRes.success && coachesRes.coaches) {
-              const normalizedCoaches: Coach[] = coachesRes.coaches.map(
-                (c: any) => ({
-                  id: c.id,
-                  name: c.name,
-                  speciality: c.speciality,
-                  degree: c.degree,
-                  experience: c.experience,
-                  fees: c.fees,
-                })
-              )
+              const normalizedCoaches: Coach[] = coachesRes.coaches.map(c => ({
+                id: c.id,
+                name: c.name,
+                speciality: c.speciality,
+                degree: c.degree,
+                experience: c.experience,
+                fees: c.fees,
+              }))
               setCoaches(normalizedCoaches)
             } else {
               setCoaches([])

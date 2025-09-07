@@ -10,6 +10,11 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 })
 
+interface CloudinaryUploadResult {
+  secure_url: string
+  [key: string]: unknown
+}
+
 export async function addWorkoutTypeAction({
   name,
   description,
@@ -32,16 +37,19 @@ export async function addWorkoutTypeAction({
           const arrayBuffer = await img.arrayBuffer()
           const buffer = Buffer.from(arrayBuffer)
 
-          const uploadResult = await new Promise<any>((resolve, reject) => {
-            const stream = cloudinary.uploader.upload_stream(
-              { folder: "workout-types" },
-              (error, result) => {
-                if (error) reject(error)
-                else resolve(result)
-              }
-            )
-            stream.end(buffer)
-          })
+          const uploadResult = await new Promise<CloudinaryUploadResult>(
+            (resolve, reject) => {
+              const stream = cloudinary.uploader.upload_stream(
+                { folder: "workout-types" },
+                (error, result) => {
+                  if (error) reject(error)
+                  else resolve(result as CloudinaryUploadResult)
+                }
+              )
+              stream.end(buffer)
+            }
+          )
+
           return uploadResult.secure_url
         }
 
@@ -74,12 +82,12 @@ export async function addWorkoutTypeAction({
     })
 
     return { success: true, workoutType }
-  }  catch (error: unknown) {
-  let message = "Unknown error"
-  if (error instanceof Error) message = error.message
-  console.error("❌ Error fetching packages:", message)
-  return { success: false, error: message, packages: [] }
-}
+  } catch (error: unknown) {
+    let message = "Unknown error"
+    if (error instanceof Error) message = error.message
+    console.error("❌ Error fetching packages:", message)
+    return { success: false, error: message, packages: [] }
+  }
 }
 
 export async function getUserSubscription(clerkUserId: string) {
@@ -121,7 +129,7 @@ export async function addCoachAction({
   experience: string
   about: string
   fees: string
-  address: Record<string, any>
+  address?: { full: string } // ✅ هنا الصلاحية تصحيح النوع
   date: number
   workoutId?: string
   available?: boolean
@@ -134,16 +142,20 @@ export async function addCoachAction({
         const arrayBuffer = await image.arrayBuffer()
         const buffer = Buffer.from(arrayBuffer)
 
-        const uploadResult = await new Promise<any>((resolve, reject) => {
-          const stream = cloudinary.uploader.upload_stream(
-            { folder: "coaches" },
-            (error, result) => {
-              if (error) reject(error)
-              else resolve(result)
-            }
-          )
-          stream.end(buffer)
-        })
+        const uploadResult = await new Promise<CloudinaryUploadResult>(
+          (resolve, reject) => {
+            const stream = cloudinary.uploader.upload_stream(
+              { folder: "coaches" },
+              (error, result) => {
+                if (error) reject(error)
+                else resolve(result as CloudinaryUploadResult)
+              }
+            )
+            stream.end(buffer)
+          }
+        )
+        uploadedImageUrl = uploadResult.secure_url
+
         uploadedImageUrl = uploadResult.secure_url
       }
 
@@ -175,12 +187,12 @@ export async function addCoachAction({
     })
 
     return { success: true, coach }
-  }  catch (error: unknown) {
-  let message = "Unknown error"
-  if (error instanceof Error) message = error.message
-  console.error("❌ Error fetching packages:", message)
-  return { success: false, error: message, packages: [] }
-}
+  } catch (error: unknown) {
+    let message = "Unknown error"
+    if (error instanceof Error) message = error.message
+    console.error("❌ Error fetching packages:", message)
+    return { success: false, error: message, packages: [] }
+  }
 }
 
 export async function getWorkoutTypesAction() {
@@ -194,12 +206,12 @@ export async function getWorkoutTypesAction() {
     })
 
     return { success: true, workoutTypes }
-  }  catch (error: unknown) {
-  let message = "Unknown error"
-  if (error instanceof Error) message = error.message
-  console.error("❌ Error fetching packages:", message)
-  return { success: false, error: message, packages: [] }
-}
+  } catch (error: unknown) {
+    let message = "Unknown error"
+    if (error instanceof Error) message = error.message
+    console.error("❌ Error fetching packages:", message)
+    return { success: false, error: message, packages: [] }
+  }
 }
 
 export async function addPackageAction({
@@ -250,12 +262,12 @@ export async function addPackageAction({
     })
 
     return { success: true, package: newPackage }
-  }  catch (error: unknown) {
-  let message = "Unknown error"
-  if (error instanceof Error) message = error.message
-  console.error("❌ Error fetching packages:", message)
-  return { success: false, error: message, packages: [] }
-}
+  } catch (error: unknown) {
+    let message = "Unknown error"
+    if (error instanceof Error) message = error.message
+    console.error("❌ Error fetching packages:", message)
+    return { success: false, error: message, packages: [] }
+  }
 }
 
 export async function addExerciseAction({
@@ -286,47 +298,53 @@ export async function addExerciseAction({
   muscleId?: string
 }) {
   try {
+    // رفع الصور
     let uploadedImages: string[] = []
 
     if (images && images.length > 0) {
       const uploadPromises = images.map(async img => {
         if (img instanceof File) {
           const buffer = Buffer.from(await img.arrayBuffer())
-          const result = await new Promise<any>((resolve, reject) => {
-            const stream = cloudinary.uploader.upload_stream(
-              { folder: "exercises/images" },
-              (err, res) => (err ? reject(err) : resolve(res))
-            )
-            stream.end(buffer)
-          })
+          const result = await new Promise<CloudinaryUploadResult>(
+            (resolve, reject) => {
+              const stream = cloudinary.uploader.upload_stream(
+                { folder: "exercises/images" },
+                (err, res) =>
+                  err ? reject(err) : resolve(res as CloudinaryUploadResult)
+              )
+              stream.end(buffer)
+            }
+          )
           return result.secure_url
-        } else if (typeof img === "string") {
+        } else {
           const result = await cloudinary.uploader.upload(img, {
             folder: "exercises/images",
           })
           return result.secure_url
         }
-        return null
       })
 
-      uploadedImages = (await Promise.all(uploadPromises)).filter(
-        (url): url is string => url !== null
-      )
+      uploadedImages = await Promise.all(uploadPromises)
     }
 
+    // رفع الفيديو
     let uploadedVideoUrl: string | undefined
+
     if (video) {
       if (video instanceof File) {
         const buffer = Buffer.from(await video.arrayBuffer())
-        const result = await new Promise<any>((resolve, reject) => {
-          const stream = cloudinary.uploader.upload_stream(
-            { folder: "exercises/videos", resource_type: "video" },
-            (err, res) => (err ? reject(err) : resolve(res))
-          )
-          stream.end(buffer)
-        })
+        const result = await new Promise<CloudinaryUploadResult>(
+          (resolve, reject) => {
+            const stream = cloudinary.uploader.upload_stream(
+              { folder: "exercises/videos", resource_type: "video" },
+              (err, res) =>
+                err ? reject(err) : resolve(res as CloudinaryUploadResult)
+            )
+            stream.end(buffer)
+          }
+        )
         uploadedVideoUrl = result.secure_url
-      } else if (typeof video === "string") {
+      } else {
         const result = await cloudinary.uploader.upload(video, {
           folder: "exercises/videos",
           resource_type: "video",
@@ -335,13 +353,13 @@ export async function addExerciseAction({
       }
     }
 
+    // إنشاء التمرين في قاعدة البيانات
     const exercise = await db.exercise.create({
       data: {
         title,
         description,
         images: uploadedImages,
         videoUrl: uploadedVideoUrl,
-
         difficulty,
         duration,
         reps,
@@ -354,12 +372,12 @@ export async function addExerciseAction({
     })
 
     return { success: true, exercise }
-  }  catch (error: unknown) {
-  let message = "Unknown error"
-  if (error instanceof Error) message = error.message
-  console.error("❌ Error fetching packages:", message)
-  return { success: false, error: message, packages: [] }
-}
+  } catch (error) {
+    let message = "Unknown error"
+    if (error instanceof Error) message = error.message
+    console.error("❌ Error adding exercise:", message)
+    return { success: false, error: message }
+  }
 }
 
 export async function getMusclesAction() {
@@ -374,12 +392,12 @@ export async function getMusclesAction() {
       },
     })
     return { success: true, muscles }
-  }  catch (error: unknown) {
-  let message = "Unknown error"
-  if (error instanceof Error) message = error.message
-  console.error("❌ Error fetching packages:", message)
-  return { success: false, error: message, packages: [] }
-}
+  } catch (error: unknown) {
+    let message = "Unknown error"
+    if (error instanceof Error) message = error.message
+    console.error("❌ Error fetching packages:", message)
+    return { success: false, error: message, packages: [] }
+  }
 }
 export async function addMuscleWithSubMuscles(data: {
   name: string
@@ -392,29 +410,33 @@ export async function addMuscleWithSubMuscles(data: {
   try {
     let imageUrl: string | undefined
     if (data.imageFile) {
-      const arrayBuffer = await data.imageFile.arrayBuffer()
-      const buffer = Buffer.from(arrayBuffer)
-      const res: any = await new Promise((resolve, reject) => {
-        cloudinary.uploader
-          .upload_stream({ folder: "muscles" }, (err, result) =>
-            err ? reject(err) : resolve(result)
+      const buffer = Buffer.from(await data.imageFile.arrayBuffer())
+      const res = await new Promise<{ secure_url: string }>(
+        (resolve, reject) => {
+          const stream = cloudinary.uploader.upload_stream(
+            { folder: "muscles" },
+            (err, result) =>
+              err ? reject(err) : resolve(result as { secure_url: string })
           )
-          .end(buffer)
-      })
+          stream.end(buffer)
+        }
+      )
       imageUrl = res.secure_url
     }
 
     let iconUrl: string | undefined
     if (data.iconFile) {
-      const arrayBuffer = await data.iconFile.arrayBuffer()
-      const buffer = Buffer.from(arrayBuffer)
-      const res: any = await new Promise((resolve, reject) => {
-        cloudinary.uploader
-          .upload_stream({ folder: "muscles/icons" }, (err, result) =>
-            err ? reject(err) : resolve(result)
+      const buffer = Buffer.from(await data.iconFile.arrayBuffer())
+      const res = await new Promise<{ secure_url: string }>(
+        (resolve, reject) => {
+          const stream = cloudinary.uploader.upload_stream(
+            { folder: "muscles/icons" },
+            (err, result) =>
+              err ? reject(err) : resolve(result as { secure_url: string })
           )
-          .end(buffer)
-      })
+          stream.end(buffer)
+        }
+      )
       iconUrl = res.secure_url
     }
 
@@ -433,8 +455,8 @@ export async function addMuscleWithSubMuscles(data: {
   } catch (error: unknown) {
     let message = "Unknown error"
     if (error instanceof Error) message = error.message
-    console.error("❌ Error fetching packages:", message)
-    return { success: false, error: message, packages: [] }
+    console.error("❌ Error adding muscle:", message)
+    return { success: false, error: message }
   }
 }
 
@@ -608,12 +630,20 @@ export async function saveUserFitnessData(data: FitnessData) {
   const { userId } = await auth()
   if (!userId) throw new Error("Not authenticated")
 
-  const updateData: any = {
-    height: data.height ? Number(data.height) : undefined,
-    weight: data.weight ? Number(data.weight) : undefined,
-    bodyFat: data.bodyFat ? Number(data.bodyFat) : undefined,
-    muscleMass: data.muscleMass ? Number(data.muscleMass) : undefined,
-  }
+  const updateData: Partial<{
+    height: number
+    weight: number
+    bodyFat: number
+    muscleMass: number
+    activityLevel: string
+    fitnessGoal: string
+    experienceLevel: string
+  }> = {}
+
+  if (data.height) updateData.height = Number(data.height)
+  if (data.weight) updateData.weight = Number(data.weight)
+  if (data.bodyFat) updateData.bodyFat = Number(data.bodyFat)
+  if (data.muscleMass) updateData.muscleMass = Number(data.muscleMass)
 
   if (data.activityLevel) updateData.activityLevel = data.activityLevel
   if (data.fitnessGoal) updateData.fitnessGoal = data.fitnessGoal
@@ -691,7 +721,7 @@ interface AddCommentInput {
   userId: string
   exerciseId: string
   content: string
-  rating?: number // ✅ اختياري
+  rating?: number
 }
 
 export async function addExerciseComment({
@@ -714,7 +744,6 @@ export async function addExerciseComment({
   const exercise = await db.exercise.findUnique({ where: { id: exerciseId } })
   if (!exercise) throw new Error("Exercise does not exist")
 
-  // ✅ التحقق إذا المستخدم أضاف comment سابق
   const existingComment = await db.exerciseComment.findFirst({
     where: { exerciseId, userId: user.id },
   })

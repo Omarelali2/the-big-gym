@@ -32,6 +32,31 @@ interface SearchResults {
     images: string[]
   }[]
 }
+interface RawCoach {
+  id: string
+  name: string
+  imageUrl?: string | null
+  fees: string
+}
+
+interface RawExercise {
+  id: string
+  title: string
+  images: string[]
+}
+
+interface RawMuscle {
+  id: string
+  name: string
+  slug: string
+  imageUrl?: string | null
+}
+
+interface RawWorkout {
+  id: string
+  name: string
+  images: string[]
+}
 
 export default function SearchBar() {
   const [query, setQuery] = useState("")
@@ -52,28 +77,28 @@ export default function SearchBar() {
       const data = await searchAll({ query })
 
       const normalizedData: SearchResults = {
-        coaches: data.coaches.map(c => ({
+        coaches: data.coaches.map((c: RawCoach) => ({
           id: c.id,
           name: c.name,
-          slug: c.id,
+          slug: c.id, // او c.slug اذا موجود
           imageUrl: c.imageUrl ?? null,
         })),
-        exercises: data.exercises.map(e => ({
+        exercises: data.exercises.map((e: RawExercise) => ({
           id: e.id,
           title: e.title,
           slug: e.id,
           images: e.images,
         })),
-        muscles: data.muscles.map(m => ({
+        muscles: data.muscles.map((m: RawMuscle) => ({
           id: m.id,
           name: m.name,
           slug: m.slug,
           imageUrl: m.imageUrl ?? null,
         })),
-        workouts: data.workouts.map(w => ({
+        workouts: data.workouts.map((w: RawWorkout) => ({
           id: w.id,
           name: w.name,
-          slug:  w.id,
+          slug: w.id,
           images: w.images,
         })),
       }
@@ -85,7 +110,6 @@ export default function SearchBar() {
     return () => clearTimeout(timeout)
   }, [query])
 
-  // Close search if click outside
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (
@@ -152,7 +176,7 @@ export default function SearchBar() {
                 <div>
                   <h3 className='font-bold text-white mb-2'>Coaches</h3>
                   <div className='space-y-2'>
-                    {results.coaches.map((c: any) => (
+                    {results.coaches.map((c: SearchResults["coaches"][0]) => (
                       <div
                         key={c.id}
                         onClick={() => handleNavigate("coach", c.slug, c.id)}
@@ -184,30 +208,34 @@ export default function SearchBar() {
                 <div>
                   <h3 className='font-bold text-white mb-2'>Exercises</h3>
                   <div className='space-y-2'>
-                    {results.exercises.map((e: any) => (
-                      <div
-                        key={e.id}
-                        onClick={() => handleNavigate("exercise", e.slug, e.id)}
-                        className='flex items-center gap-3 cursor-pointer hover:bg-gray-700 rounded-md p-2'
-                      >
-                        {e.images.length > 0 ? (
-                          <Image
-                            src={e.images[0]}
-                            alt={e.title}
-                            width={40}
-                            height={40}
-                            className='rounded-full object-cover'
-                          />
-                        ) : (
-                          <div className='w-10 h-10 bg-gray-600 rounded-full flex items-center justify-center'>
-                            No
-                          </div>
-                        )}
-                        <span className='text-white font-semibold'>
-                          {e.title}
-                        </span>
-                      </div>
-                    ))}
+                    {results.exercises.map(
+                      (e: SearchResults["exercises"][0]) => (
+                        <div
+                          key={e.id}
+                          onClick={() =>
+                            handleNavigate("exercise", e.slug, e.id)
+                          }
+                          className='flex items-center gap-3 cursor-pointer hover:bg-gray-700 rounded-md p-2'
+                        >
+                          {e.images.length > 0 ? (
+                            <Image
+                              src={e.images[0]}
+                              alt={e.title}
+                              width={40}
+                              height={40}
+                              className='rounded-full object-cover'
+                            />
+                          ) : (
+                            <div className='w-10 h-10 bg-gray-600 rounded-full flex items-center justify-center'>
+                              No
+                            </div>
+                          )}
+                          <span className='text-white font-semibold'>
+                            {e.title}
+                          </span>
+                        </div>
+                      )
+                    )}
                   </div>
                 </div>
               )}
@@ -216,7 +244,7 @@ export default function SearchBar() {
                 <div>
                   <h3 className='font-bold text-white mb-2'>Muscles</h3>
                   <div className='space-y-2'>
-                    {results.muscles.map((m: any) => (
+                    {results.muscles.map((m: SearchResults["muscles"][0]) => (
                       <div
                         key={m.id}
                         onClick={() => handleNavigate("muscle", m.slug, m.id)}
@@ -248,7 +276,7 @@ export default function SearchBar() {
                 <div>
                   <h3 className='font-bold text-white mb-2'>Workouts</h3>
                   <div className='space-y-2'>
-                    {results.workouts.map((w: any) => (
+                    {results.workouts.map((w: SearchResults["workouts"][0]) => (
                       <div
                         key={w.id}
                         onClick={() => handleNavigate("workout", w.slug, w.id)}

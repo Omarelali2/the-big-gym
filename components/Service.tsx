@@ -6,9 +6,16 @@ import Image from "next/image"
 import { getAllWorkouts } from "@/lib/data"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 
+interface Workout {
+  id: string
+  name: string
+  description?: string
+  images?: string[]
+}
+
 export default function Service() {
   const router = useRouter()
-  const [workouts, setWorkouts] = useState<any[]>([])
+  const [workouts, setWorkouts] = useState<Workout[]>([])
 
   const [current, setCurrent] = useState(0)
   const itemsPerPage = 4
@@ -28,7 +35,15 @@ export default function Service() {
   useEffect(() => {
     async function fetchData() {
       const data = await getAllWorkouts()
-      setWorkouts(data)
+
+      const normalizedData: Workout[] = data.map(w => ({
+        id: w.id,
+        name: w.name,
+        description: w.description ?? "",
+        images: w.images ?? [],
+      }))
+
+      setWorkouts(normalizedData)
     }
     fetchData()
   }, [])

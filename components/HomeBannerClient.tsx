@@ -6,7 +6,13 @@ import Image from "next/image"
 import { banner_1, Frame } from "@/images"
 import { useUser, SignInButton } from "@clerk/nextjs"
 
-export default function HomeBannerClient({ stats }: { stats: any }) {
+interface Stats {
+  totalCoaches: number
+  totalUsers: number
+  totalExercises: number
+  activeSubscribers: number
+}
+export default function HomeBannerClient({ stats }: { stats: Stats }) {
   const { isSignedIn } = useUser()
 
   return (
@@ -81,7 +87,7 @@ export default function HomeBannerClient({ stats }: { stats: any }) {
                 transform transition duration-300 ease-in-out hover:scale-110'
         >
           <div className='bg-black/80 text-white px-4 py-2 rounded-lg'>
-            + {stats.totalUsers} <br />  User Log
+            + {stats.totalUsers} <br /> User Log
           </div>
         </div>
 

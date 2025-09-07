@@ -3,7 +3,19 @@
 import { deletePackageAction } from "@/lib/data"
 import { useState, useEffect } from "react"
 
-export default function PackagesPage({ initialPackages }: { initialPackages: any[] }) {
+interface Package {
+  id: number
+  name: string
+  description?: string
+  features: string[]
+  monthlyPrice: number
+  annualPrice: number
+  currency: string
+  discount?: number
+  offerActive: boolean
+}
+
+export default function PackagesPage({ initialPackages }: { initialPackages: Package[] }) {
   const [packages, setPackages] = useState(initialPackages)
 
   const handleDelete = async (id: number) => {
