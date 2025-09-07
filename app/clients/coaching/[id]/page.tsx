@@ -1,16 +1,12 @@
 import React from "react"
 import Link from "next/link"
 import { getCoachById } from "@/lib/data"
-import { currentUser } from "@clerk/nextjs/server"
 
-type CoachDetailProps = {
-  params: {
-    id: string
-  }
-}
+export default async function CoachDetail({ params }: any) {
+  // params.id موجود من dynamic route
+  const { id } = params
 
-export default async function CoachDetail({ params }: CoachDetailProps) {
-  const { success, coach } = await getCoachById(params.id)
+  const { success, coach } = await getCoachById(id)
 
   if (!success || !coach)
     return (
@@ -77,4 +73,3 @@ export default async function CoachDetail({ params }: CoachDetailProps) {
     </div>
   )
 }
-
