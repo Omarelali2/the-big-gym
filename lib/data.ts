@@ -35,9 +35,11 @@ export async function getPackagesAction() {
     })
 
     return { success: true, packages }
-  } catch (error: any) {
-    console.error("❌ Error fetching packages:", error)
-    return { success: false, error: error.message, packages: [] }
+  } catch (error: unknown) {
+    let message = "Unknown error"
+    if (error instanceof Error) message = error.message
+    console.error("❌ Error fetching packages:", message)
+    return { success: false, error: message, packages: [] }
   }
 }
 export async function getAllExercises() {
@@ -66,9 +68,11 @@ export async function getMuscles() {
       orderBy: { createdAt: "desc" },
     })
     return { success: true, muscles }
-  } catch (error: any) {
-    console.error("❌ Error fetching muscles:", error)
-    return { success: false, error: error.message, muscles: [] }
+  } catch (error: unknown) {
+    let message = "Unknown error"
+    if (error instanceof Error) message = error.message
+    console.error("❌ Error fetching packages:", message)
+    return { success: false, error: message, packages: [] }
   }
 }
 export async function getExercisesByMuscleAction(muscleId: string) {
@@ -83,9 +87,11 @@ export async function getExercisesByMuscleAction(muscleId: string) {
     })
 
     return { success: true, exercises }
-  } catch (error: any) {
-    console.error("❌ Error fetching exercises by muscle:", error)
-    return { success: false, error: error.message }
+  } catch (error: unknown) {
+    let message = "Unknown error"
+    if (error instanceof Error) message = error.message
+    console.error("❌ Error fetching packages:", message)
+    return { success: false, error: message, packages: [] }
   }
 }
 
@@ -100,9 +106,11 @@ export async function getMuscleById(id: string) {
     }
 
     return { success: true, muscle }
-  } catch (error: any) {
-    console.error("❌ Error fetching muscle:", error)
-    return { success: false, error: error.message }
+  } catch (error: unknown) {
+    let message = "Unknown error"
+    if (error instanceof Error) message = error.message
+    console.error("❌ Error fetching packages:", message)
+    return { success: false, error: message, packages: [] }
   }
 }
 export async function getExerciseById(id: string) {
@@ -211,9 +219,11 @@ export async function getCoachChatsAction(coachId: string) {
     }))
 
     return { success: true, chats: formattedChats }
-  } catch (err: any) {
-    console.error("getCoachChatsAction error:", err)
-    return { success: false, message: "Failed to fetch chats" }
+  } catch (error: unknown) {
+    let message = "Unknown error"
+    if (error instanceof Error) message = error.message
+    console.error("❌ Error fetching packages:", message)
+    return { success: false, error: message, packages: [] }
   }
 }
 
@@ -424,7 +434,6 @@ export async function getAllCoache() {
   }
 }
 
-// ==================== Package ====================
 export async function getAllPackages() {
   try {
     const packages = await db.package.findMany()
@@ -435,7 +444,6 @@ export async function getAllPackages() {
   }
 }
 
-// ==================== WorkoutType ====================
 export async function getAllWorkoutTypes() {
   try {
     const workouts = await db.workoutType.findMany({
@@ -452,7 +460,6 @@ export async function getAllWorkoutTypes() {
   }
 }
 
-// ==================== Muscle ====================
 export async function getAllMuscles() {
   try {
     const muscles = await db.muscle.findMany({
@@ -474,34 +481,37 @@ export async function deletePackageAction(id: number) {
       where: { id },
     })
     return { success: true }
-  } catch (error: any) {
-    return { success: false, error: error.message }
+  } catch (error: unknown) {
+    let message = "Unknown error"
+    if (error instanceof Error) message = error.message
+    console.error("❌ Error fetching packages:", message)
+    return { success: false, error: message, packages: [] }
   }
 }
 
-// -------------------- User --------------------
 export async function deleteUser(id: string) {
   return await db.user.delete({
     where: { id },
   })
 }
 
-// -------------------- WorkoutType --------------------
 export async function deleteWorkoutType(id: string) {
   return await db.workoutType.delete({
     where: { id },
   })
 }
 
-// -------------------- Muscle --------------------
 export async function deleteMuscleAction(id: string) {
   try {
     await db.muscle.delete({
       where: { id },
     })
     return { success: true }
-  } catch (error: any) {
-    return { success: false, error: error.message }
+  } catch (error: unknown) {
+    let message = "Unknown error"
+    if (error instanceof Error) message = error.message
+    console.error("❌ Error fetching packages:", message)
+    return { success: false, error: message, packages: [] }
   }
 }
 
@@ -511,17 +521,23 @@ export async function deleteExerciseAction(id: string) {
       where: { id },
     })
     return { success: true }
-  } catch (error: any) {
-    return { success: false, error: error.message }
-  }
+  } catch (error: unknown) {
+  let message = "Unknown error"
+  if (error instanceof Error) message = error.message
+  console.error("❌ Error fetching packages:", message)
+  return { success: false, error: message, packages: [] }
+}
 }
 export async function deleteCoachAction(id: string) {
   try {
     await db.coach.delete({ where: { id } })
     return { success: true }
-  } catch (error: any) {
-    return { success: false, error: error.message }
-  }
+  } catch (error: unknown) {
+  let message = "Unknown error"
+  if (error instanceof Error) message = error.message
+  console.error("❌ Error fetching packages:", message)
+  return { success: false, error: message, packages: [] }
+}
 }
 
 export async function toggleUserSubscription(userId: string) {
@@ -546,11 +562,13 @@ export async function toggleUserSubscription(userId: string) {
       subscriptionActive: updatedUser.subscriptionActive,
       selectedPackageId: updatedUser.selectedPackageId,
     }
-  } catch (error: any) {
-    return { success: false, error: error.message }
-  }
+  } catch (error: unknown) {
+  let message = "Unknown error"
+  if (error instanceof Error) message = error.message
+  console.error("❌ Error fetching packages:", message)
+  return { success: false, error: message, packages: [] }
 }
-
+}
 
 export type UserReview = {
   userId?: string
@@ -566,12 +584,14 @@ export type ExerciseStats = {
   reviews: UserReview[]
 }
 
-export async function getExerciseStats(exerciseId: string): Promise<ExerciseStats> {
+export async function getExerciseStats(
+  exerciseId: string
+): Promise<ExerciseStats> {
   const exercise = await db.exercise.findUnique({
     where: { id: exerciseId },
     include: {
       comments: {
-        include: { user: true } // يجيب بيانات الـ user لكل comment
+        include: { user: true }, 
       },
       ratings: true,
     },
@@ -584,7 +604,9 @@ export async function getExerciseStats(exerciseId: string): Promise<ExerciseStat
 
   const averageRating =
     ratings.length > 0
-      ? Math.round((ratings.reduce((acc, r) => acc + r.rating, 0) / ratings.length) * 10) / 10
+      ? Math.round(
+          (ratings.reduce((acc, r) => acc + r.rating, 0) / ratings.length) * 10
+        ) / 10
       : 0
 
   const numReviews = comments.length
@@ -656,5 +678,3 @@ export async function getUserByClerkId(clerkUserId: string) {
     return null
   }
 }
-
-
