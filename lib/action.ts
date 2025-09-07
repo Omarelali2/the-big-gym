@@ -74,10 +74,12 @@ export async function addWorkoutTypeAction({
     })
 
     return { success: true, workoutType }
-  } catch (error: any) {
-    console.error("❌ Error adding workout type:", error)
-    return { success: false, error: error.message }
-  }
+  }  catch (error: unknown) {
+  let message = "Unknown error"
+  if (error instanceof Error) message = error.message
+  console.error("❌ Error fetching packages:", message)
+  return { success: false, error: message, packages: [] }
+}
 }
 
 export async function getUserSubscription(clerkUserId: string) {
@@ -173,10 +175,12 @@ export async function addCoachAction({
     })
 
     return { success: true, coach }
-  } catch (error: any) {
-    console.error("❌ Error adding coach:", error)
-    return { success: false, error: error.message }
-  }
+  }  catch (error: unknown) {
+  let message = "Unknown error"
+  if (error instanceof Error) message = error.message
+  console.error("❌ Error fetching packages:", message)
+  return { success: false, error: message, packages: [] }
+}
 }
 
 export async function getWorkoutTypesAction() {
@@ -190,10 +194,12 @@ export async function getWorkoutTypesAction() {
     })
 
     return { success: true, workoutTypes }
-  } catch (error: any) {
-    console.error("❌ Error fetching workout types:", error)
-    return { success: false, error: error.message, workoutTypes: [] }
-  }
+  }  catch (error: unknown) {
+  let message = "Unknown error"
+  if (error instanceof Error) message = error.message
+  console.error("❌ Error fetching packages:", message)
+  return { success: false, error: message, packages: [] }
+}
 }
 
 export async function addPackageAction({
@@ -244,10 +250,12 @@ export async function addPackageAction({
     })
 
     return { success: true, package: newPackage }
-  } catch (error: any) {
-    console.error("❌ Error adding package:", error)
-    return { success: false, error: error.message }
-  }
+  }  catch (error: unknown) {
+  let message = "Unknown error"
+  if (error instanceof Error) message = error.message
+  console.error("❌ Error fetching packages:", message)
+  return { success: false, error: message, packages: [] }
+}
 }
 
 export async function addExerciseAction({
@@ -346,10 +354,12 @@ export async function addExerciseAction({
     })
 
     return { success: true, exercise }
-  } catch (error: any) {
-    console.error("❌ Error adding exercise:", error)
-    return { success: false, error: error.message }
-  }
+  }  catch (error: unknown) {
+  let message = "Unknown error"
+  if (error instanceof Error) message = error.message
+  console.error("❌ Error fetching packages:", message)
+  return { success: false, error: message, packages: [] }
+}
 }
 
 export async function getMusclesAction() {
@@ -364,10 +374,12 @@ export async function getMusclesAction() {
       },
     })
     return { success: true, muscles }
-  } catch (error: any) {
-    console.error("❌ Error fetching muscles:", error)
-    return { success: false, error: error.message }
-  }
+  }  catch (error: unknown) {
+  let message = "Unknown error"
+  if (error instanceof Error) message = error.message
+  console.error("❌ Error fetching packages:", message)
+  return { success: false, error: message, packages: [] }
+}
 }
 export async function addMuscleWithSubMuscles(data: {
   name: string
@@ -418,9 +430,11 @@ export async function addMuscleWithSubMuscles(data: {
     })
 
     return { success: true, muscle }
-  } catch (error: any) {
-    console.error("❌ Error adding muscle:", error)
-    return { success: false, message: error.message }
+  } catch (error: unknown) {
+    let message = "Unknown error"
+    if (error instanceof Error) message = error.message
+    console.error("❌ Error fetching packages:", message)
+    return { success: false, error: message, packages: [] }
   }
 }
 
@@ -692,7 +706,9 @@ export async function addExerciseComment({
 
   let user = await db.user.findUnique({ where: { clerkUserId: userId } })
   if (!user) {
-    user = await db.user.create({ data: { clerkUserId: userId, email: "user-email@example.com" } })
+    user = await db.user.create({
+      data: { clerkUserId: userId, email: "user-email@example.com" },
+    })
   }
 
   const exercise = await db.exercise.findUnique({ where: { id: exerciseId } })
@@ -700,17 +716,19 @@ export async function addExerciseComment({
 
   // ✅ التحقق إذا المستخدم أضاف comment سابق
   const existingComment = await db.exerciseComment.findFirst({
-    where: { exerciseId, userId: user.id }
+    where: { exerciseId, userId: user.id },
   })
   if (existingComment) {
     throw new Error("You have already submitted a comment for this exercise")
   }
 
-  const comment = await db.exerciseComment.create({ data: { content, exerciseId, userId: user.id } })
+  const comment = await db.exerciseComment.create({
+    data: { content, exerciseId, userId: user.id },
+  })
 
-  const exerciseRating = await db.exerciseRating.create({ data: { rating, exerciseId, userId: user.id } })
+  const exerciseRating = await db.exerciseRating.create({
+    data: { rating, exerciseId, userId: user.id },
+  })
 
   return { comment, exerciseRating }
 }
-
-
