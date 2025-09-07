@@ -15,32 +15,25 @@ type Coach = {
   speciality?: string
   available: boolean
 }
-type Stats = {
-  totalUsers: number
-  totalCoaches: number
-  totalPackages: number
-  totalExercises: number
-  avgMonthlyPrice: number
-  activeSubscribers: number
-  latestUsers: User[]
-  latestCoaches: Coach[] // لو عندك نوع Coach معرف
-}
-type User = {
+
+type DashboardUser = {
   id: string
-  username?: string
-  name?: string
+  clerkUserId: string
+  name: string | null
+  username: string | null
   email: string
-  imageUrl?: string
-  subscriptionActive?: boolean
-  selectedPackage?: { name: string }
-  height?: number
-  weight?: number
-  bodyFat?: number
-  muscleMass?: number
-  activityLevel?: string
-  fitnessGoal?: string
-  phoneNumber?: string
-  address?: string
+  imageUrl: string | null
+  subscriptionActive: boolean | null
+  selectedPackage: { id: number; name: string } | null
+  height: number | null
+  weight: number | null
+  bodyFat: number | null
+  muscleMass: number | null
+  activityLevel: string | null
+  fitnessGoal: string | null
+  phoneNumber: string | null
+  address: string | null
+  experienceLevel: string | null
 }
 
 export default async function DashboardPage() {
@@ -144,7 +137,7 @@ export default async function DashboardPage() {
               </tr>
             </thead>
             <tbody className='bg-white divide-y divide-gray-200'>
-              {stats.latestUsers.map((u: User) => (
+              {stats.latestUsers.map((u: DashboardUser) => (
                 <tr key={u.id}>
                   <td className='px-4 py-2'>
                     <img

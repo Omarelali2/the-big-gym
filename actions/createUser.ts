@@ -1,3 +1,5 @@
+import { db } from "@/lib/db";
+
 export async function createUserAction({
   clerkUserId,
   email,
@@ -14,14 +16,14 @@ export async function createUserAction({
   packageId?: number;
 }) {
   try {
-    const existingUser = await prisma.user.findUnique({
+    const existingUser = await db.user.findUnique({
       where: { clerkUserId },
     });
 
     let user;
 
     if (existingUser) {
-      user = await prisma.user.update({
+      user = await db.user.update({
         where: { clerkUserId },
         data: {
           name,
@@ -32,7 +34,7 @@ export async function createUserAction({
         },
       });
     } else {
-      user = await prisma.user.create({
+      user = await db.user.create({
         data: {
           clerkUserId,
           email,
