@@ -36,6 +36,7 @@ type DashboardUser = {
   address: string | null
   experienceLevel: string | null
 }
+export const dynamic = "force-dynamic"
 
 export default async function DashboardPage() {
   const stats = await getDashboardStats()
@@ -81,7 +82,7 @@ export default async function DashboardPage() {
           <BarChart3 className='w-8 h-8 mb-2' />
           <p className='text-sm'>Avg Price</p>
           <p className='text-2xl font-bold'>
-            ${stats.avgMonthlyPrice.toFixed(2)}
+            ${(stats.avgMonthlyPrice ?? 0).toFixed(2)}
           </p>
         </div>
       </div>
