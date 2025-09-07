@@ -100,7 +100,9 @@ const ToolsSlider = ({ userPackageName }: Props) => {
               className='group relative bg-gray-800 rounded-3xl shadow-xl hover:shadow-2xl transition-shadow duration-500 overflow-hidden flex flex-col'
             >
               <div className='w-full h-48 relative overflow-hidden'>
-                <img
+                <Image
+                  width={48}
+                  height={48}
                   src={tool.image}
                   alt={tool.title}
                   className='w-full h-full object-cover group-hover:scale-105 transition-transform duration-500'

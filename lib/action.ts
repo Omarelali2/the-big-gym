@@ -29,44 +29,43 @@ export async function addWorkoutTypeAction({
   userIds?: string[]
 }) {
   try {
-    let uploadedImages: string[] = []
+    const uploadedImages: string[] =
+      images && images.length > 0
+        ? (
+            await Promise.all(
+              images.map(async img => {
+                if (img instanceof File) {
+                  const arrayBuffer = await img.arrayBuffer()
+                  const buffer = Buffer.from(arrayBuffer)
 
-    if (images && images.length > 0) {
-      const uploadPromises = images.map(async img => {
-        if (img instanceof File) {
-          const arrayBuffer = await img.arrayBuffer()
-          const buffer = Buffer.from(arrayBuffer)
+                  const uploadResult = await new Promise<CloudinaryUploadResult>(
+                    (resolve, reject) => {
+                      const stream = cloudinary.uploader.upload_stream(
+                        { folder: "workout-types" },
+                        (error, result) => {
+                          if (error) reject(error)
+                          else resolve(result as CloudinaryUploadResult)
+                        }
+                      )
+                      stream.end(buffer)
+                    }
+                  )
 
-          const uploadResult = await new Promise<CloudinaryUploadResult>(
-            (resolve, reject) => {
-              const stream = cloudinary.uploader.upload_stream(
-                { folder: "workout-types" },
-                (error, result) => {
-                  if (error) reject(error)
-                  else resolve(result as CloudinaryUploadResult)
+                  return uploadResult.secure_url
                 }
-              )
-              stream.end(buffer)
-            }
-          )
 
-          return uploadResult.secure_url
-        }
+                if (typeof img === "string") {
+                  const uploadResult = await cloudinary.uploader.upload(img, {
+                    folder: "workout-types",
+                  })
+                  return uploadResult.secure_url
+                }
 
-        if (typeof img === "string") {
-          const uploadResult = await cloudinary.uploader.upload(img, {
-            folder: "workout-types",
-          })
-          return uploadResult.secure_url
-        }
-
-        return null
-      })
-
-      uploadedImages = (await Promise.all(uploadPromises)).filter(
-        (url): url is string => url !== null
-      )
-    }
+                return null
+              })
+            )
+          ).filter((url): url is string => url !== null)
+        : []
 
     const workoutType = await db.workoutType.create({
       data: {
@@ -76,19 +75,20 @@ export async function addWorkoutTypeAction({
         coaches: coachIds
           ? { connect: coachIds.map(id => ({ id })) }
           : undefined,
-
-        users: userIds ? { connect: userIds.map(id => ({ id })) } : undefined,
+        users: userIds
+          ? { connect: userIds.map(id => ({ id })) }
+          : undefined,
       },
     })
 
     return { success: true, workoutType }
   } catch (error: unknown) {
-    let message = "Unknown error"
-    if (error instanceof Error) message = error.message
-    console.error("❌ Error fetching packages:", message)
-    return { success: false, error: message, packages: [] }
+    const message = error instanceof Error ? error.message : "Unknown error"
+    console.error("❌ Error creating workout type:", message)
+    return { success: false, error: message }
   }
 }
+
 
 export async function getUserSubscription(clerkUserId: string) {
   const user = await db.user.findUnique({
@@ -602,30 +602,6 @@ export type FitnessData = {
   experienceLevel?: string
 }
 
-const validActivityLevels = [
-  "Sedentary",
-  "Light",
-  "Moderate",
-  "Active",
-  "VeryActive",
-]
-const validFitnessGoals = ["LoseWeight", "GainMuscle", "Maintain", "Endurance"]
-const validExperienceLevels = ["Beginner", "Intermediate", "Advanced"]
-
-function sanitizeActivityLevel(value?: string): string | undefined {
-  if (!value) return undefined
-  return validActivityLevels.includes(value) ? value : undefined
-}
-
-function sanitizeFitnessGoal(value?: string): string | undefined {
-  if (!value) return undefined
-  return validFitnessGoals.includes(value) ? value : undefined
-}
-
-function sanitizeExperienceLevel(value?: string): string | undefined {
-  if (!value) return undefined
-  return validExperienceLevels.includes(value) ? value : undefined
-}
 export async function saveUserFitnessData(data: FitnessData) {
   const { userId } = await auth()
   if (!userId) throw new Error("Not authenticated")

@@ -12,7 +12,9 @@ const nextConfig = {
       "example.com",
       "res.cloudinary.com",
       "plus.unsplash.com",
-      'img.clerk.com'
+      'img.clerk.com',
+      "lh3.googleusercontent.com"
+
     ],
     
     
