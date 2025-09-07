@@ -9,6 +9,39 @@ import {
   Star,
   Package,
 } from "lucide-react"
+type Coach = {
+  id: string
+  name: string
+  speciality?: string
+  available: boolean
+}
+type Stats = {
+  totalUsers: number
+  totalCoaches: number
+  totalPackages: number
+  totalExercises: number
+  avgMonthlyPrice: number
+  activeSubscribers: number
+  latestUsers: User[]
+  latestCoaches: Coach[] // لو عندك نوع Coach معرف
+}
+type User = {
+  id: string
+  username?: string
+  name?: string
+  email: string
+  imageUrl?: string
+  subscriptionActive?: boolean
+  selectedPackage?: { name: string }
+  height?: number
+  weight?: number
+  bodyFat?: number
+  muscleMass?: number
+  activityLevel?: string
+  fitnessGoal?: string
+  phoneNumber?: string
+  address?: string
+}
 
 export default async function DashboardPage() {
   const stats = await getDashboardStats()
@@ -111,7 +144,7 @@ export default async function DashboardPage() {
               </tr>
             </thead>
             <tbody className='bg-white divide-y divide-gray-200'>
-              {stats.latestUsers.map(u => (
+              {stats.latestUsers.map((u: User) => (
                 <tr key={u.id}>
                   <td className='px-4 py-2'>
                     <img
@@ -151,7 +184,7 @@ export default async function DashboardPage() {
       <div className='bg-white rounded-xl shadow-lg p-6'>
         <h2 className='text-xl font-semibold mb-4'>Latest Coaches</h2>
         <ul className='divide-y'>
-          {stats.latestCoaches.map(c => (
+          {stats.latestCoaches.map((c: Coach) => (
             <li key={c.id} className='py-3 flex justify-between items-center'>
               <div>
                 <p className='font-medium'>{c.name}</p>
