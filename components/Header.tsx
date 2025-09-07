@@ -10,6 +10,8 @@ import Link from "next/link"
 import { User, LayoutDashboard, LogOut } from "lucide-react"
 import Plan from "./Plan"
 import Image from "next/image"
+export const dynamic = "force-dynamic"
+
 const HeaderServer = async () => {
   const clerkUser = await currentUser()
 
