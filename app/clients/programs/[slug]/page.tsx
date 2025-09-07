@@ -6,6 +6,7 @@ import { getMuscleBySlug } from "@/lib/data"
 import { getExerciseStats, ExerciseStats } from "@/lib/data"
 import { Star, MessageSquare, Clock, Dumbbell, Users } from "lucide-react"
 import Link from "next/link"
+import Image from "next/image"
 
 type Exercise = {
   id: string
@@ -141,7 +142,9 @@ export default function MuscleDetailPage() {
               className='rounded-3xl border-2 border-red-700 hover:border-orange-700 shadow-xl overflow-hidden transition-transform duration-500 hover:scale-105 hover:shadow-2xl'
             >
               <div className='relative w-full h-50 overflow-hidden group'>
-                <img
+                <Image
+                  width={48}
+                  height={48}
                   src={ex.images[0] ?? "/placeholder.png"}
                   alt={ex.title ?? "Exercise image"}
                   className='w-full h-full object-cover transition-transform duration-500 group-hover:scale-110'

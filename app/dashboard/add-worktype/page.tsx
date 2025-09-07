@@ -32,7 +32,7 @@ export default function WorkoutTypePage() {
       } else {
         toast.error("Error: " + (result.error || "Something went wrong"))
       }
-    } catch (err) {
+    } catch {
       toast.error("Something went wrong")
     } finally {
       setLoading(false)
@@ -40,7 +40,7 @@ export default function WorkoutTypePage() {
   }
 
   return (
-    <div className=' flex items-center justify-center p-5'>
+    <div className='flex items-center justify-center p-5'>
       <div className='bg-gray-800 text-white rounded-2xl shadow-2xl p-8 w-full max-w-3xl overflow-y-auto max-h-[86vh]'>
         <h1 className='text-3xl font-bold mb-6 text-center text-red-500'>
           Add Workout Type

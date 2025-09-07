@@ -2,36 +2,44 @@
 import React, { useEffect, useState } from "react"
 import { getAllCoaches } from "@/lib/data"
 import Image from "next/image"
-import Link from "next/link"
-import { ChevronLeft, ChevronRight } from "lucide-react"
 import toast from "react-hot-toast"
 
 type Props = { userPackageName: string }
 
+interface Coach {
+  id: string
+  name: string
+  speciality: string
+  imageUrl: string
+}
+
 const CoachingSlider = ({ userPackageName }: Props) => {
-  const [coaches, setCoaches] = useState<any[]>([])
+  const [coaches, setCoaches] = useState<Coach[]>([])
   const [current, setCurrent] = useState(0)
   const itemsPerPage = 4
 
   useEffect(() => {
     async function fetchData() {
       const data = await getAllCoaches()
-      setCoaches(data)
+
+      const mappedData: Coach[] = data.map(c => ({
+        id: c.id, 
+        name: c.workout?.name || "No Name",
+        speciality: "Speciality Placeholder", 
+        imageUrl: c.workout?.images[0] || "/default-coach.png",
+      }))
+
+      setCoaches(mappedData)
     }
+
     fetchData()
   }, [])
 
-  const totalSlides = Math.ceil(coaches.length / itemsPerPage)
-
-  const nextSlide = () =>
-    setCurrent(Math.min(current + itemsPerPage, coaches.length - 1))
-  const prevSlide = () => setCurrent(Math.max(current - itemsPerPage, 0))
-
   return (
     <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6'>
-      {coaches.slice(current, current + itemsPerPage).map((coach, index) => (
+      {coaches.slice(current, current + itemsPerPage).map(coach => (
         <div
-          key={index}
+          key={coach.id}
           className='relative rounded-lg overflow-hidden shadow-2xl flex flex-col items-center transform transition-transform duration-500 hover:scale-105 hover:rotate-1 cursor-pointer'
           onClick={() => {
             if (userPackageName === "Premium") {
@@ -57,7 +65,7 @@ const CoachingSlider = ({ userPackageName }: Props) => {
               {coach.speciality}
             </p>
             <span className='px-0 py-2 text-white hover:text-red-500 transition-all duration-300'>
-              View More <span className='text-1xl text-red-600'>→</span>
+              View More <span className='text-1xl text-red-600'>&rarr;</span>
             </span>
           </div>
         </div>

@@ -9,6 +9,7 @@ import {
   Star,
   Package,
 } from "lucide-react"
+import Image from "next/image"
 type Coach = {
   id: string
   name: string
@@ -140,7 +141,9 @@ export default async function DashboardPage() {
               {stats.latestUsers.map((u: DashboardUser) => (
                 <tr key={u.id}>
                   <td className='px-4 py-2'>
-                    <img
+                    <Image
+                      width={48}
+                      height={48}
                       src={u.imageUrl || "/default-profile.png"}
                       alt={u.name || "User Profile"}
                       className='w-10 h-10 rounded-full object-cover'

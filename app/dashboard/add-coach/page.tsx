@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { addCoachAction, getWorkoutTypesAction } from "@/lib/action"
 import toast from "react-hot-toast"
+import Image from "next/image"
 
 export default function CoachPage() {
   const [name, setName] = useState("")

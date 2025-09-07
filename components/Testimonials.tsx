@@ -1,6 +1,7 @@
 "use client"
 import { useRef, useState } from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
+import Image from "next/image"
 
 const Testimonials = () => {
   const slider = useRef<HTMLUListElement | null>(null)
@@ -9,19 +10,15 @@ const Testimonials = () => {
   const [startX, setStartX] = useState(0)
 
   const slideForward = () => {
-    let newTx = tx > -75 ? tx - 25 : 0
+    const newTx = tx > -75 ? tx - 25 : 0
     setTx(newTx)
-    if (slider.current) {
-      slider.current.style.transform = `translateX(${newTx}%)`
-    }
+    if (slider.current) slider.current.style.transform = `translateX(${newTx}%)`
   }
 
   const slideBackward = () => {
-    let newTx = tx < 0 ? tx + 25 : -75
+    const newTx = tx < 0 ? tx + 25 : -75
     setTx(newTx)
-    if (slider.current) {
-      slider.current.style.transform = `translateX(${newTx}%)`
-    }
+    if (slider.current) slider.current.style.transform = `translateX(${newTx}%)`
   }
 
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -32,13 +29,9 @@ const Testimonials = () => {
   const handleMouseUp = (e: React.MouseEvent) => {
     if (!isDragging) return
     setIsDragging(false)
-
     const endX = e.clientX
-    if (startX - endX > 50) {
-      slideForward()
-    } else if (endX - startX > 50) {
-      slideBackward()
-    }
+    if (startX - endX > 50) slideForward()
+    else if (endX - startX > 50) slideBackward()
   }
 
   return (
@@ -80,27 +73,24 @@ const Testimonials = () => {
           {Array(4)
             .fill(0)
             .map((_, i) => (
-              <li
-                key={i}
-                className='min-w-[100%] sm:min-w-[50%] lg:min-w-[25%]'
-              >
+              <li key={i} className='min-w-[100%] sm:min-w-[50%] lg:min-w-[25%]'>
                 <div className='bg-zinc-800/80 backdrop-blur-md p-8 rounded-2xl shadow-xl border border-zinc-700 hover:scale-105 hover:shadow-red-500/20 transition-transform duration-500'>
                   <div className='flex items-center mb-6'>
-                    <img
+                    <Image
                       src={`https://i.pravatar.cc/100?img=${i + 5}`}
                       alt='user'
+                      width={64}
+                      height={64}
                       className='w-16 h-16 rounded-full border-2 border-red-500 object-cover mr-4'
                     />
                     <div>
                       <h3 className='font-bold text-xl'>William Jackson</h3>
-                      <span className='text-sm text-gray-400'>
-                        Edusity, USA
-                      </span>
+                      <span className='text-sm text-gray-400'>Edusity, USA</span>
                     </div>
                   </div>
                   <p className='text-gray-300 leading-relaxed'>
-                    Choosing to pursue my degree at{" "}
-                    <span className='text-red-500 font-semibold'>Edusity</span>{" "}
+                    Choosing to pursue my degree at{' '}
+                    <span className='text-red-500 font-semibold'>Edusity</span>{' '}
                     was one of the best decisions I've ever made. The supportive
                     community, state-of-the-art facilities, and commitment to
                     academic excellence have truly exceeded my expectations.
@@ -116,7 +106,7 @@ const Testimonials = () => {
           <div
             key={i}
             className={`h-3 w-3 rounded-full ${
-              tx === pos ? "bg-red-500 scale-125" : "bg-gray-600"
+              tx === pos ? 'bg-red-500 scale-125' : 'bg-gray-600'
             } transition-all duration-300`}
           />
         ))}

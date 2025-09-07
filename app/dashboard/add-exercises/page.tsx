@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { addExerciseAction, getMusclesAction } from "@/lib/action"
 import toast from "react-hot-toast"
+import Image from "next/image"
 
 export default function AddExercisePage() {
   const [title, setTitle] = useState("")
@@ -14,12 +15,12 @@ export default function AddExercisePage() {
   const [reps, setReps] = useState<number>()
   const [sets, setSets] = useState<number>()
   const [category, setCategory] = useState("")
-  const [muscleId, setMuscleId] = useState("") 
+  const [muscleId, setMuscleId] = useState("")
   const [tags, setTags] = useState("")
   const [equipment, setEquipment] = useState("")
   const [loading, setLoading] = useState(false)
 
-  const [muscles, setMuscles] = useState<{ id: string; name: string }[]>([]) 
+  const [muscles, setMuscles] = useState<{ id: string; name: string }[]>([])
 
   useEffect(() => {
     const fetchMuscles = async () => {
@@ -123,7 +124,9 @@ export default function AddExercisePage() {
                     key={idx}
                     className='w-28 h-28 relative border-2 border-gray-600 rounded-lg overflow-hidden'
                   >
-                    <img
+                    <Image
+                      width={48}
+                      height={48}
                       src={url}
                       alt={`preview ${idx}`}
                       className='w-full h-full object-cover'

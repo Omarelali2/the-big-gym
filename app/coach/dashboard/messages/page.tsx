@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react"
 import { getCoachChatsAction, sendMessageFromCoach } from "@/lib/action"
+import Image from "next/image"
 
 const CoachMessagesPage = () => {
   type Message = {
@@ -93,7 +94,7 @@ const CoachMessagesPage = () => {
         )
       )
 
-      setNewMessage("") 
+      setNewMessage("")
     } catch (err) {
       console.error("Error sending message:", err)
     }
@@ -119,7 +120,9 @@ const CoachMessagesPage = () => {
             }`}
             onClick={() => setSelectedChat(chat)}
           >
-            <img
+            <Image
+              width={48}
+              height={48}
               src={chat.userImage || "/images/default-user.png"}
               alt={chat.userName}
               className='w-12 h-12 rounded-full object-cover'

@@ -1,21 +1,10 @@
 "use client"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import {
-  LayoutDashboard,
-  UserPlus,
-  List,
-  Dumbbell,
-  Layers,
-  CreditCard,
-  Home,
-  MessageCircle,
-} from "lucide-react"
-import { useState } from "react"
+import { LayoutDashboard, Dumbbell, Home, MessageCircle } from "lucide-react"
 
 const SidebarCoach = () => {
   const pathname = usePathname()
-  const [listOpen, setListOpen] = useState(false)
 
   return (
     <aside className='h-screen w-64 bg-gray-900 text-white flex flex-col p-4 shadow-xl'>

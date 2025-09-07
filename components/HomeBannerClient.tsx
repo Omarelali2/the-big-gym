@@ -20,10 +20,10 @@ export default function HomeBannerClient({ stats }: { stats: Stats }) {
       <div className='space-y-5 flex items-center flex-col md:items-start md:text-left md:mr-10'>
         <Image src={Frame} alt='Frame' className='w-150' />
         <p className='text-base text-white leading-relaxed max-w-xl mb-4 tracking-wide'>
-          "Join the Fitmaker community and transform your fitness journey. Our
-          expert coaches and personalized programs are designed to help you
+          &quot;Join the Fitmaker community and transform your fitness journey.
+          Our expert coaches and personalized programs are designed to help you
           achieve your goals and exceed your expectations. Ready to make a
-          change?"
+          change?&quot;
         </p>
 
         <div className='flex gap-8 mt-4 flex-col sm:flex-row'>

@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { useUser } from "@clerk/nextjs"
 import { getMuscles, getAllWorkouts } from "@/lib/data"
 import { getUserSubscription } from "@/lib/action"
+import Image from "next/image"
 
 type Exercise = { id: string; title: string }
 
@@ -145,7 +146,9 @@ export default function MusclesPage() {
           >
             <div className='flex items-center mb-3'>
               {m.iconUrl && (
-                <img
+                <Image
+                  width={48}
+                  height={48}
                   src={m.iconUrl}
                   alt={m.name}
                   className='w-10 h-10 mr-2 rounded-full border-2 border-black hover:animate-spin transition-transform'
@@ -154,7 +157,9 @@ export default function MusclesPage() {
               <h2 className='text-xl font-bold text-white'>{m.name}</h2>
             </div>
             {m.imageUrl && (
-              <img
+              <Image
+                width={48}
+                height={48}
                 src={m.imageUrl}
                 alt={m.name}
                 className='w-full h-32 object-cover rounded-md mb-2 hover:scale-105 transition-transform'

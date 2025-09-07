@@ -9,6 +9,7 @@ import Menu from "./Menu"
 import Link from "next/link"
 import { User, LayoutDashboard, LogOut } from "lucide-react"
 import Plan from "./Plan"
+import Image from "next/image"
 const HeaderServer = async () => {
   const clerkUser = await currentUser()
 
@@ -40,7 +41,9 @@ const HeaderServer = async () => {
             <div className='relative group'>
               <button className='w-10 h-10 rounded-full overflow-hidden border-2 border-gray-300'>
                 {" "}
-                <img
+                <Image
+                  width={48}
+                  height={48}
                   src={clerkUser.imageUrl}
                   alt='Profile'
                   className='w-full h-full object-cover'
