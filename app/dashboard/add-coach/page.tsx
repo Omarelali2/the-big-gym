@@ -30,10 +30,11 @@ export default function CoachPage() {
       try {
         const result = await getWorkoutTypesAction()
         if (result.success)
-          setWorkoutTypes(result.workoutTypes ?? []) // fallback لمصفوفة فارغة
+          setWorkoutTypes(result.workoutTypes ?? [])
         else console.error("Failed to fetch workout types:", result.error)
       } catch (err) {
-        console.error("Failed to fetch workout types:", err)
+        console.error(err)
+        toast.error("Error occurred")
       }
     }
     fetchWorkoutTypes()
@@ -222,7 +223,7 @@ export default function CoachPage() {
                 src={imagePreview}
                 alt='Preview'
                 width={400}
-                height={112} 
+                height={112}
                 className='mt-2 w-full object-cover rounded-lg border'
               />
             )}
