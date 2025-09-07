@@ -1,6 +1,8 @@
 import CoachesTable from "@/components/CoachesTable"
 import { getAllCoaches } from "@/lib/data"
 
+export const dynamic = "force-dynamic"
+
 export default async function CoachesPage() {
   const coaches = await getAllCoaches()
 
