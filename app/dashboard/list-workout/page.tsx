@@ -1,8 +1,10 @@
-import { getAllWorkoutTypes } from "@/lib/data"
-import Image from "next/image"
+import { getAllWorkoutTypes } from "@/lib/data";
+import Image from "next/image";
+
+export const dynamic = "force-dynamic"; // <- لازم
 
 export default async function WorkoutTypesPage() {
-  const workouts = await getAllWorkoutTypes()
+  const workouts = await getAllWorkoutTypes();
 
   return (
     <div className='p-6'>
@@ -61,5 +63,5 @@ export default async function WorkoutTypesPage() {
         </tbody>
       </table>
     </div>
-  )
+  );
 }

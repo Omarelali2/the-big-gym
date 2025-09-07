@@ -1,5 +1,7 @@
-import MusclesPage from "@/components/MusclesPage"
-import { getAllMuscles } from "@/lib/data"
+import MusclesPage from "@/components/MusclesPage";
+import { getAllMuscles } from "@/lib/data";
+
+export const dynamic = "force-dynamic"; // <- هون
 
 export default async function MusclesPageWrapper() {
   const muscles = (await getAllMuscles()).map(m => ({
@@ -19,7 +21,7 @@ export default async function MusclesPageWrapper() {
       description: e.description ?? undefined,
       imageUrl: e.images?.[0] ?? undefined,
     })),
-  }))
+  }));
 
-  return <MusclesPage initialMuscles={muscles} />
+  return <MusclesPage initialMuscles={muscles} />;
 }
