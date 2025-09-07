@@ -1,7 +1,7 @@
 "use client"
 import { useUser } from "@clerk/nextjs"
 import { useEffect, useState } from "react"
-import { getProfile } from "@/lib/data"
+import { getProfile, getWorkoutById } from "@/lib/data"
 import { getCaloriesAdvice, updateUserAction } from "@/lib/action"
 import {
   BarChart,
@@ -45,9 +45,32 @@ type FormValues = {
   experienceLevel: string
 }
 
+type Profile = {
+  id: string
+  name: string | null
+  username: string | null
+  phoneNumber?: string | null
+  address?: string | null
+  bio?: string | null
+  height?: number | null
+  weight?: number | null
+  bodyFat?: number | null
+  muscleMass?: number | null
+  activityLevel?: string | null
+  fitnessGoal?: string | null
+  experienceLevel?: string | null
+  imageUrl?: string | null
+  subscriptionActive: boolean | null
+  isAdmin: boolean | null
+  selectedWorkout?: {
+    id: string
+    name: string
+  } | null
+}
+
 export default function ProfilePage() {
   const { user, isSignedIn } = useUser()
-  const [profile, setProfile] = useState<any>(null)
+  const [profile, setProfile] = useState<Profile | null>(null)
   const [dailyCalories, setDailyCalories] = useState<DailyCal[]>([])
   const [editMode, setEditMode] = useState(false)
   const [formValues, setFormValues] = useState<FormValues>({
@@ -69,20 +92,47 @@ export default function ProfilePage() {
 
     const loadProfile = async () => {
       const data = await getProfile(user.id)
-      setProfile(data)
+
+      // Extract only the properties defined in Profile
+      const cleanProfile: Profile = {
+        id: data.id,
+        name: data.name,
+        username: data.username,
+        phoneNumber: data.phoneNumber,
+        address: data.address,
+        bio: data.bio,
+        height: data.height,
+        weight: data.weight,
+        bodyFat: data.bodyFat,
+        muscleMass: data.muscleMass,
+        activityLevel: data.activityLevel,
+        fitnessGoal: data.fitnessGoal,
+        experienceLevel: data.experienceLevel,
+        imageUrl: data.imageUrl,
+        subscriptionActive: data.subscriptionActive,
+        isAdmin: data.isAdmin,
+        selectedWorkout: data.selectedWorkout
+          ? {
+              id: data.selectedWorkout.id,
+              name: data.selectedWorkout.name,
+            }
+          : null,
+      }
+
+      setProfile(cleanProfile)
 
       setFormValues({
-        name: data.name ?? "",
-        phoneNumber: data.phoneNumber ?? "",
-        address: data.address ?? "",
-        bio: data.bio ?? "",
-        height: data.height ?? 0,
-        weight: data.weight ?? 0,
-        bodyFat: data.bodyFat ?? 0,
-        muscleMass: data.muscleMass ?? 0,
-        activityLevel: data.activityLevel ?? "",
-        fitnessGoal: data.fitnessGoal ?? "",
-        experienceLevel: data.experienceLevel ?? "",
+        name: cleanProfile.name ?? "",
+        phoneNumber: cleanProfile.phoneNumber ?? "",
+        address: cleanProfile.address ?? "",
+        bio: cleanProfile.bio ?? "",
+        height: cleanProfile.height ?? 0,
+        weight: cleanProfile.weight ?? 0,
+        bodyFat: cleanProfile.bodyFat ?? 0,
+        muscleMass: cleanProfile.muscleMass ?? 0,
+        activityLevel: cleanProfile.activityLevel ?? "",
+        fitnessGoal: cleanProfile.fitnessGoal ?? "",
+        experienceLevel: cleanProfile.experienceLevel ?? "",
       })
 
       const stored = localStorage.getItem("dailyCalories")
@@ -104,15 +154,46 @@ export default function ProfilePage() {
   }
 
   const handleSaveProfile = async () => {
-    if (!user) return
-    try {
-      const updated = await updateUserAction(user.id, formValues)
-      setProfile(updated)
-      setEditMode(false)
-    } catch (err) {
-      console.error(err)
+  if (!user) return
+  try {
+    const updated = await updateUserAction(user.id, formValues)
+
+    // إذا عندك selectedWorkoutId، جلب object
+    const workout = updated.selectedWorkoutId
+      ? await getWorkoutById(updated.selectedWorkoutId)
+      : null
+
+    const cleanUpdated: Profile = {
+      id: updated.id,
+      name: updated.name!,
+      username: updated.username!,
+      phoneNumber: updated.phoneNumber ?? "",
+      address: updated.address ?? "",
+      bio: updated.bio ?? "",
+      height: updated.height ?? 0,
+      weight: updated.weight ?? 0,
+      bodyFat: updated.bodyFat ?? 0,
+      muscleMass: updated.muscleMass ?? 0,
+      activityLevel: updated.activityLevel ?? "",
+      fitnessGoal: updated.fitnessGoal ?? "",
+      experienceLevel: updated.experienceLevel ?? "",
+      imageUrl: updated.imageUrl ?? "",
+      subscriptionActive: updated.subscriptionActive,
+      isAdmin: updated.isAdmin,
+      selectedWorkout: workout
+        ? { id: workout.id, name: workout.name }
+        : null,
     }
+
+    setProfile(cleanUpdated)
+    setEditMode(false)
+  } catch (error: unknown) {
+    let message = "Unknown error"
+    if (error instanceof Error) message = error.message
+    console.error("❌ Error fetching packages:", message)
   }
+}
+
 
   const handleUpdateCalories = async (
     index: number,
@@ -143,7 +224,6 @@ export default function ProfilePage() {
   if (!isSignedIn || !user)
     return <p className='p-10 text-center text-red-500'>Sign in first</p>
   if (!profile)
-    
     return (
       <div className='flex items-center justify-center mt-20 min-h-[60vh]'>
         <div className='w-16 h-16 border-4 border-red-600 border-t-transparent border-solid rounded-full animate-spin'></div>
@@ -169,10 +249,7 @@ export default function ProfilePage() {
 
         <div className='flex-1 space-y-2'>
           <h1 className='text-4xl font-extrabold flex items-center gap-2'>
-            <User className='w-8 h-8' />{" "}
-            
-              {profile.username}
-            
+            <User className='w-8 h-8' /> {profile.username}
           </h1>
           <p className='text-lg flex items-center gap-2'>
             <Phone className='w-5 h-5' />{" "}

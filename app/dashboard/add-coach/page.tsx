@@ -17,7 +17,9 @@ export default function CoachPage() {
   const [date, setDate] = useState("")
   const [image, setImage] = useState<File | null>(null)
   const [workoutId, setWorkoutId] = useState("")
-  const [workoutTypes, setWorkoutTypes] = useState<{ id: string; name: string }[]>([])
+  const [workoutTypes, setWorkoutTypes] = useState<
+    { id: string; name: string }[]
+  >([])
   const [loading, setLoading] = useState(false)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [available, setAvailable] = useState(true)
@@ -25,7 +27,8 @@ export default function CoachPage() {
   useEffect(() => {
     const fetchWorkoutTypes = async () => {
       const result = await getWorkoutTypesAction()
-      if (result.success) setWorkoutTypes(result.workoutTypes)
+      if (result.success)
+        setWorkoutTypes(result.workoutTypes ?? []) // fallback لمصفوفة فارغة
       else console.error("Failed to fetch workout types:", result.error)
     }
     fetchWorkoutTypes()
@@ -83,9 +86,10 @@ export default function CoachPage() {
   return (
     <div className=' flex items-center justify-center p-5'>
       <div className='bg-gray-800 text-white rounded-2xl shadow-2xl p-8 w-full max-w-3xl overflow-y-auto max-h-[86vh]'>
-        <h1 className='text-3xl font-bold mb-6 text-center text-red-500'>Add Coach</h1>
+        <h1 className='text-3xl font-bold mb-6 text-center text-red-500'>
+          Add Coach
+        </h1>
         <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
-          
           <input
             type='text'
             placeholder='Name'
@@ -94,7 +98,7 @@ export default function CoachPage() {
             className='border border-gray-600 rounded-lg p-3 bg-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500'
             required
           />
-          
+
           <input
             type='email'
             placeholder='Email'
@@ -183,7 +187,9 @@ export default function CoachPage() {
           >
             <option value=''>-- Select Workout Type --</option>
             {workoutTypes.map(w => (
-              <option key={w.id} value={w.id}>{w.name}</option>
+              <option key={w.id} value={w.id}>
+                {w.name}
+              </option>
             ))}
           </select>
 
@@ -201,7 +207,9 @@ export default function CoachPage() {
             <input
               type='file'
               accept='image/*'
-              onChange={e => setImage(e.target.files ? e.target.files[0] : null)}
+              onChange={e =>
+                setImage(e.target.files ? e.target.files[0] : null)
+              }
               className='w-full'
             />
             {imagePreview && (

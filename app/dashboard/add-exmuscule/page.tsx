@@ -4,13 +4,6 @@ import { useEffect, useState } from "react"
 import { addMuscleWithSubMuscles, getWorkoutTypesAction } from "@/lib/action"
 import toast from "react-hot-toast"
 
-interface SubMuscleInput {
-  name: string
-  slug: string
-  description?: string
-  imageFile?: File
-}
-
 interface MuscleInput {
   name: string
   slug: string
@@ -35,7 +28,7 @@ export default function AddMusclePage() {
   useEffect(() => {
     const fetchWorkoutTypes = async () => {
       const result = await getWorkoutTypesAction()
-      if (result.success) setWorkoutTypes(result.workoutTypes)
+      if (result.success) setWorkoutTypes(result.workoutTypes ?? [])
       else console.error("Failed to fetch workout types:", result.error)
     }
     fetchWorkoutTypes()
@@ -64,8 +57,6 @@ export default function AddMusclePage() {
       setImageFile(null)
       setIconFile(null)
       setWorkoutId("")
-    } else {
-      toast.error(`Error: ${res.message}`)
     }
 
     setLoading(false)

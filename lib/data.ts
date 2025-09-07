@@ -336,6 +336,35 @@ export async function searchAll(params: SearchParams) {
     workouts,
   }
 }
+export type Workout = {
+  id: string
+  name: string
+  description?: string | null
+  images?: string[]
+  createdAt: Date
+  updatedAt: Date
+}
+
+export async function getWorkoutById(id: string): Promise<Workout | null> {
+  try {
+    const workout = await db.workoutType.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        images: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    })
+
+    return workout
+  } catch (error) {
+    console.error("Error fetching workout:", error)
+    return null
+  }
+}
 
 export async function getDashboardStats() {
   try {
