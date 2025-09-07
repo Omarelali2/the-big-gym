@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, use } from "react"
 import ChatInput from "../../../../components/ChatInput"
 import { getChatMessages } from "@/lib/action"
 import { getCoachById } from "@/lib/data"
+import Image from "next/image"
 
 export type Message = {
   id: string
@@ -103,7 +104,9 @@ export default function ChatPage({
     <div className='flex flex-col h-screen mt-15 bg-gray-900 text-white'>
       <div className='flex items-center justify-between p-4 border-b border-gray-700 sticky top-0 bg-gray-900 z-10'>
         <div className='flex items-center'>
-          <img
+          <Image
+          width={48}
+          height={48}
             src={coachData.imageUrl || "/images/default-coach.png"}
             alt={coachData.name}
             className='w-12 h-12 rounded-full object-cover shadow-md mr-3'

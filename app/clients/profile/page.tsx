@@ -23,6 +23,7 @@ import {
   Star,
   BoxIcon,
 } from "lucide-react"
+import Image from "next/image"
 
 type DailyCal = {
   date: string
@@ -153,45 +154,44 @@ export default function ProfilePage() {
   }
 
   const handleSaveProfile = async () => {
-  if (!user) return
-  try {
-    const updated = await updateUserAction(user.id, formValues)
+    if (!user) return
+    try {
+      const updated = await updateUserAction(user.id, formValues)
 
-    const workout = updated.selectedWorkoutId
-      ? await getWorkoutById(updated.selectedWorkoutId)
-      : null
+      const workout = updated.selectedWorkoutId
+        ? await getWorkoutById(updated.selectedWorkoutId)
+        : null
 
-    const cleanUpdated: Profile = {
-      id: updated.id,
-      name: updated.name!,
-      username: updated.username!,
-      phoneNumber: updated.phoneNumber ?? "",
-      address: updated.address ?? "",
-      bio: updated.bio ?? "",
-      height: updated.height ?? 0,
-      weight: updated.weight ?? 0,
-      bodyFat: updated.bodyFat ?? 0,
-      muscleMass: updated.muscleMass ?? 0,
-      activityLevel: updated.activityLevel ?? "",
-      fitnessGoal: updated.fitnessGoal ?? "",
-      experienceLevel: updated.experienceLevel ?? "",
-      imageUrl: updated.imageUrl ?? "",
-      subscriptionActive: updated.subscriptionActive,
-      isAdmin: updated.isAdmin,
-      selectedWorkout: workout
-        ? { id: workout.id, name: workout.name }
-        : null,
+      const cleanUpdated: Profile = {
+        id: updated.id,
+        name: updated.name!,
+        username: updated.username!,
+        phoneNumber: updated.phoneNumber ?? "",
+        address: updated.address ?? "",
+        bio: updated.bio ?? "",
+        height: updated.height ?? 0,
+        weight: updated.weight ?? 0,
+        bodyFat: updated.bodyFat ?? 0,
+        muscleMass: updated.muscleMass ?? 0,
+        activityLevel: updated.activityLevel ?? "",
+        fitnessGoal: updated.fitnessGoal ?? "",
+        experienceLevel: updated.experienceLevel ?? "",
+        imageUrl: updated.imageUrl ?? "",
+        subscriptionActive: updated.subscriptionActive,
+        isAdmin: updated.isAdmin,
+        selectedWorkout: workout
+          ? { id: workout.id, name: workout.name }
+          : null,
+      }
+
+      setProfile(cleanUpdated)
+      setEditMode(false)
+    } catch (error: unknown) {
+      let message = "Unknown error"
+      if (error instanceof Error) message = error.message
+      console.error("❌ Error fetching packages:", message)
     }
-
-    setProfile(cleanUpdated)
-    setEditMode(false)
-  } catch (error: unknown) {
-    let message = "Unknown error"
-    if (error instanceof Error) message = error.message
-    console.error("❌ Error fetching packages:", message)
   }
-}
-
 
   const handleUpdateCalories = async (
     index: number,
@@ -235,8 +235,11 @@ export default function ProfilePage() {
     <div className='max-w-7xl mx-auto p-8 mt-15 space-y-12'>
       <div className='flex flex-col md:flex-row items-center md:items-start gap-6 bg-gradient-to-r from-gray-500 to-gray-600 p-8 rounded-3xl shadow-2xl text-white'>
         {profile.imageUrl ? (
-          <img
+          <Image
+            width={48}
+            height={48}
             src={profile.imageUrl}
+            alt={profile.name || "Profile image"} 
             className='w-36 h-36 rounded-full object-cover border-4 border-white shadow-xl'
           />
         ) : (

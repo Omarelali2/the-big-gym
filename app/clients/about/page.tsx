@@ -1,6 +1,7 @@
 "use client"
 import React from "react"
 import { useUser } from "@clerk/nextjs"
+import Image from "next/image"
 
 export default function AboutPage() {
   const {  isSignedIn } = useUser()
@@ -25,7 +26,9 @@ export default function AboutPage() {
       </div>
 
       <div className='flex flex-col md:flex-row gap-12 items-center max-w-7xl mx-auto'>
-        <img
+        <Image
+        width={48}
+        height={48}
           className='w-full md:w-3/5 rounded-2xl shadow-lg transition-transform duration-300 hover:scale-105 object-cover max-h-[520px]'
           src='https://collegepill.com/wp-content/uploads/2024/01/heloise-hut-9.jpg'
           alt='Contact Us'

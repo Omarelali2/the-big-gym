@@ -1,6 +1,7 @@
 import React from "react"
 import Link from "next/link"
 import { getCoachById } from "@/lib/data"
+import Image from "next/image"
 
 interface Workout {
   id: string
@@ -40,7 +41,7 @@ export default async function CoachDetail({
   const coach: Coach | null = result.coach
     ? {
         ...result.coach,
-        fees: result.coach.fees.toString(), 
+        fees: result.coach.fees.toString(),
       }
     : null
 
@@ -54,7 +55,9 @@ export default async function CoachDetail({
     <div className='p-10 max-w-7xl mx-auto bg-gray-800 text-white rounded-3xl shadow-2xl flex flex-col md:flex-row gap-12 mt-20 transition-all duration-500 hover:shadow-3xl'>
       <div className='flex-shrink-0 relative group'>
         {coach.imageUrl ? (
-          <img
+          <Image
+            width={48}
+            height={48}
             src={coach.imageUrl}
             alt={coach.name}
             className='w-72 h-72 md:w-80 md:h-80 rounded-full object-cover border-4 border-orange-400 shadow-2xl transition-transform duration-500 group-hover:scale-105 group-hover:rotate-1'
