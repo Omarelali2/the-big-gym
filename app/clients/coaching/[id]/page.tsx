@@ -1,8 +1,10 @@
 // app/clients/coaching/[id]/page.tsx
 import React from "react";
 import Link from "next/link";
-import { getCoachById } from "@/lib/data";
 import Image from "next/image";
+import { getCoachById } from "@/lib/data";
+
+export const dynamic = 'force-dynamic'; // يحل مشاكل type مع dynamic routes
 
 interface Workout {
   id: string;
@@ -26,14 +28,11 @@ interface CoachResult {
   coach: Coach | null;
 }
 
-// PageProps لازم تكون بالشكل التالي
+export default async function CoachDetail({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = await params; // حل مشكلة الـ Promise
+  const { id } = resolvedParams;
 
-
-export default async function CoachDetail({ params }: { params: { id: string } }) {
-  
-  const { id } = params;
   const result: CoachResult = await getCoachById(id);
-
   const coach: Coach | null = result.coach
     ? { ...result.coach, fees: result.coach.fees.toString() }
     : null;
@@ -48,6 +47,7 @@ export default async function CoachDetail({ params }: { params: { id: string } }
 
   return (
     <div className="p-10 max-w-7xl mx-auto bg-gray-800 text-white rounded-3xl shadow-2xl flex flex-col md:flex-row gap-12 mt-20 transition-all duration-500 hover:shadow-3xl">
+      
       {/* صورة الكوتش */}
       <div className="flex-shrink-0 relative group">
         {coach.imageUrl ? (

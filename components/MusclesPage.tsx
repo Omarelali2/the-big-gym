@@ -4,27 +4,40 @@ import { deleteMuscleAction } from "@/lib/data"
 import Image from "next/image"
 import { useState } from "react"
 
+interface Exercise {
+  id: string
+  name?: string
+  title?: string
+  description?: string | null
+  imageUrl?: string | null
+  images?: string[]
+  videoUrl?: string | null
+  muscleId?: string | null
+  createdAt: string | Date
+  updatedAt: string | Date
+}
+
+interface Workout {
+  id: string
+  name: string
+  description?: string | null
+  images?: string[]
+}
+
 interface Muscle {
   id: string
   name: string
   slug: string
-  description?: string
-  workout?: {
-    id: string
-    name: string
-  }
+  description?: string | null
+  workout?: Workout | null
   exercises: Exercise[]
-  imageUrl?: string
-  iconUrl?: string
+  imageUrl?: string | null
+  iconUrl?: string | null
   createdAt: string | Date
   updatedAt: string | Date
 }
-interface Exercise {
-  id: string
-  name: string
-  description?: string
-  imageUrl?: string
-}
+
+
 
 export default function MusclesPage({
   initialMuscles,

@@ -52,7 +52,7 @@ export default function MusclesPage() {
       const subData = await getUserSubscription(user.id)
       setSubscriptionActive(subData.subscriptionActive || subData.isAdmin)
 
-      
+    
 
       setLoading(false)
     }
