@@ -27,10 +27,14 @@ export default function CoachPage() {
 
   useEffect(() => {
     const fetchWorkoutTypes = async () => {
-      const result = await getWorkoutTypesAction()
-      if (result.success)
-        setWorkoutTypes(result.workoutTypes ?? []) // fallback لمصفوفة فارغة
-      else console.error("Failed to fetch workout types:", result.error)
+      try {
+        const result = await getWorkoutTypesAction()
+        if (result.success)
+          setWorkoutTypes(result.workoutTypes ?? []) // fallback لمصفوفة فارغة
+        else console.error("Failed to fetch workout types:", result.error)
+      } catch (err) {
+        console.error("Failed to fetch workout types:", err)
+      }
     }
     fetchWorkoutTypes()
   }, [])
@@ -214,10 +218,12 @@ export default function CoachPage() {
               className='w-full'
             />
             {imagePreview && (
-              <img
+              <Image
                 src={imagePreview}
                 alt='Preview'
-                className='mt-2 h-28 w-full object-cover rounded-lg border'
+                width={400}
+                height={112} 
+                className='mt-2 w-full object-cover rounded-lg border'
               />
             )}
           </div>

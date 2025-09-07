@@ -13,6 +13,7 @@ import { Clock, Dumbbell, Activity, Star } from "lucide-react"
 import { useUser } from "@clerk/nextjs"
 import { addExerciseComment } from "@/lib/action"
 import toast from "react-hot-toast"
+import Image from "next/image"
 
 type ExerciseComment = {
   id: string
@@ -55,33 +56,6 @@ type Exercise = {
   workoutId?: string | null
   ratings?: ExerciseRating[]
   comments?: ExerciseComment[]
-}
-type ExerciseFromAPI = {
-  id: string
-  title: string
-  description?: string | null
-  images: string[]
-  videoUrl?: string | null
-  difficulty: string
-  duration?: number | null
-  reps?: number | null
-  sets?: number | null
-  category?: string | null
-  tags?: string[]
-  equipment?: string | null
-  workoutId?: string // نضيف هالخاصية عشان تتوافق
-  ratings?: {
-    id: string
-    rating: number
-    userId?: string | null
-    createdAt: Date
-  }[]
-  comments?: {
-    id: string
-    content: string
-    userId?: string | null
-    createdAt: Date
-  }[]
 }
 
 export type UserReview = {
@@ -264,7 +238,6 @@ export default function ExerciseDetailPage() {
     }
   }
 
-  // نوع الداتا اللي بترجع من الـ API
   type RawExerciseFromAPI = {
     id: string
     title: string
@@ -293,7 +266,6 @@ export default function ExerciseDetailPage() {
     }[]
   }
 
-  // في useEffect
   useEffect(() => {
     async function fetchExerciseAndCoaches() {
       const id = Array.isArray(params.id) ? params.id[0] : params.id
@@ -394,13 +366,9 @@ export default function ExerciseDetailPage() {
   const userHasCommented = exercise?.comments?.some(c => c.userId === user?.id)
 
   {
-    !userHasCommented && (
+    !userHasCommented ? (
       <div className='bg-gray-800 p-6 rounded-3xl shadow-xl mb-10'></div>
-    )
-  }
-
-  {
-    userHasCommented && (
+    ) : (
       <p className='text-yellow-400'>
         You have already submitted a comment for this exercise.
       </p>
@@ -425,7 +393,9 @@ export default function ExerciseDetailPage() {
               key={idx}
               className='h-32 md:h-39 rounded-2xl overflow-hidden shadow-lg'
             >
-              <img
+              <Image
+                width={48}
+                height={48}
                 src={img ?? "/placeholder.png"}
                 alt={`${exercise.title}-${idx}`}
                 className='w-full h-full object-cover transform hover:scale-105 transition duration-500'
