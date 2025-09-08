@@ -28,7 +28,7 @@ type WorkoutType = {
 export default function MusclesPage() {
   const router = useRouter()
 
-  const { user, isSignedIn } = useUser()
+  const { isSignedIn, user } = useUser()
 
   const [muscles, setMuscles] = useState<Muscle[]>([])
   const [subscriptionActive, setSubscriptionActive] = useState(false)
@@ -39,6 +39,7 @@ export default function MusclesPage() {
   const [selectedWorkout, setSelectedWorkout] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
 
+  
   useEffect(() => {
     async function loadData() {
       if (!user) return
@@ -51,8 +52,6 @@ export default function MusclesPage() {
 
       const subData = await getUserSubscription(user.id)
       setSubscriptionActive(subData.subscriptionActive || subData.isAdmin)
-
-      
 
       setLoading(false)
     }
