@@ -58,7 +58,7 @@ export default function FitnessWizard() {
   }
 
   return (
-    <div className='w-120 md:w-full mx-auto mt-12 p-8 bg-gradient-to-br from-gray-600 via-gray-700 to-gray-800 shadow-3xl rounded-3xl text-white'>
+    <div className='w-full max-w-md mx-auto mt-12 p-8 bg-gradient-to-br from-gray-600 via-gray-700 to-gray-800 shadow-3xl rounded-3xl text-white'>
       <h1 className='text-3xl font-extrabold mb-8 text-center text-gray-100'>
         Update Your Fitness Profile
       </h1>
@@ -81,7 +81,7 @@ export default function FitnessWizard() {
           <button
             onClick={nextStep}
             disabled={!form.height}
-            className='bg-blue-600 px-6 py-3 rounded-2xl font-bold hover:bg-blue-700 transition'
+            className='bg-red-600 px-6 py-3 rounded-2xl font-bold hover:bg-red-700 transition'
           >
             Next
           </button>
@@ -91,7 +91,7 @@ export default function FitnessWizard() {
       {step === 2 && (
         <div className='flex flex-col gap-4'>
           <label className='flex items-center gap-2'>
-            <Dumbbell className='w-6 h-6 text-indigo-400' /> Enter your weight
+            <Dumbbell className='w-6 h-6 text-red-400' /> Enter your weight
             (kg)
           </label>
           <input
@@ -107,7 +107,7 @@ export default function FitnessWizard() {
           <button
             onClick={nextStep}
             disabled={!form.weight}
-            className='bg-indigo-600 px-6 py-3 rounded-2xl font-bold hover:bg-indigo-700 transition'
+            className='bg-red-600 px-6 py-3 rounded-2xl font-bold hover:bg-red-700 transition'
           >
             Next
           </button>
