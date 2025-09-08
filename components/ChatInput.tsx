@@ -1,6 +1,7 @@
 "use client"
 import { useState, useRef, useTransition } from "react"
 import { sendMessage } from "@/lib/action" // server action
+import { Send } from "lucide-react"
 export type Message = {
   id: string
   text: string
@@ -51,7 +52,7 @@ export default function ChatInput({
   }
 
   return (
-    <div className='flex gap-2 p-4 border-t border-gray-700 bg-gray-800'>
+    <div className='flex gap-2 p-4 border-t px-2 border-gray-700 bg-gray-800'>
       <input
         value={text}
         onChange={e => setText(e.target.value)}
@@ -62,12 +63,17 @@ export default function ChatInput({
       <button
         onClick={handleSend}
         disabled={isPending}
-        className={`px-5 py-3 rounded-full font-semibold ${
-          isPending ? "bg-gray-500" : "bg-orange-500 hover:bg-orange-600"
+        className={`px-4 md:py-3 rounded-full font-semibold flex items-center justify-center ${
+          isPending ? "bg-gray-500" : "bg-green-500 hover:bg-green-600"
         }`}
       >
-        {isPending ? "Sending..." : "Send"}
+        {isPending ? (
+          "Sending..."
+        ) : (
+          <Send className='w-5 h-5 text-white' /> // أيقونة Send
+        )}
       </button>
+
       <div ref={messagesEndRef} />
     </div>
   )

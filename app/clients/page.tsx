@@ -11,6 +11,7 @@ import Coaching from "../../components/Coaching"
 import BlogSection from "@/components/BlogSection"
 import { AccordionDemo } from "@/components/AccordionDemo"
 import { createCheckoutSession } from "@/lib/stripe"
+import ConditionalFooter from "@/components/ConditionalFooter"
 
 const Home = async () => {
   const user = await currentUser()
@@ -60,6 +61,7 @@ const Home = async () => {
       <Coaching />
       <BlogSection />
       <AccordionDemo />
+      <ConditionalFooter/>
     </Container>
   )
 }
