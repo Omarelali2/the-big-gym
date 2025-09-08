@@ -32,31 +32,6 @@ interface SearchResults {
     images: string[]
   }[]
 }
-interface RawCoach {
-  id: string
-  name: string
-  imageUrl?: string | null
-  fees: string
-}
-
-interface RawExercise {
-  id: string
-  title: string
-  images: string[]
-}
-
-interface RawMuscle {
-  id: string
-  name: string
-  slug: string
-  imageUrl?: string | null
-}
-
-interface RawWorkout {
-  id: string
-  name: string
-  images: string[]
-}
 
 export default function SearchBar({
   onExpand,
@@ -66,22 +41,24 @@ export default function SearchBar({
   onCollapse: () => void
 }) {
   const [expanded, setExpanded] = useState(false)
+  const [query, setQuery] = useState("")
+  const [loading, setLoading] = useState(false)
+  const [results, setResults] = useState<SearchResults | null>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const router = useRouter()
 
   const handleExpand = () => {
     setExpanded(true)
-    if (onExpand) onExpand() // ✅ استدعاء الـ callback
+    onExpand?.()
   }
 
   const handleCollapse = () => {
     setExpanded(false)
-    if (onCollapse) onCollapse() // ✅ استدعاء الـ callback
+    setResults(null)
+    onCollapse?.()
   }
-  const [query, setQuery] = useState("")
-  const [loading, setLoading] = useState(false)
-  const containerRef = useRef<HTMLDivElement>(null)
-  const router = useRouter()
-  const [results, setResults] = useState<SearchResults | null>(null)
 
+  // البحث
   useEffect(() => {
     if (!query.trim()) {
       setResults(null)
@@ -90,50 +67,53 @@ export default function SearchBar({
 
     const timeout = setTimeout(async () => {
       setLoading(true)
-      const data = await searchAll({ query })
+      try {
+        const data = await searchAll({ query })
 
-      const normalizedData: SearchResults = {
-        coaches: data.coaches.map((c: RawCoach) => ({
-          id: c.id,
-          name: c.name,
-          slug: c.id, // او c.slug اذا موجود
-          imageUrl: c.imageUrl ?? null,
-        })),
-        exercises: data.exercises.map((e: RawExercise) => ({
-          id: e.id,
-          title: e.title,
-          slug: e.id,
-          images: e.images,
-        })),
-        muscles: data.muscles.map((m: RawMuscle) => ({
-          id: m.id,
-          name: m.name,
-          slug: m.slug,
-          imageUrl: m.imageUrl ?? null,
-        })),
-        workouts: data.workouts.map((w: RawWorkout) => ({
-          id: w.id,
-          name: w.name,
-          slug: w.id,
-          images: w.images,
-        })),
+        const normalizedData: SearchResults = {
+          coaches: data.coaches.map((c) => ({
+            id: c.id,
+            name: c.name,
+            slug: c.name.toLowerCase().replace(/\s+/g, "-"),
+            imageUrl: c.imageUrl ?? null,
+          })),
+          exercises: data.exercises.map((e) => ({
+            id: e.id,
+            title: e.title,
+            slug: e.title.toLowerCase().replace(/\s+/g, "-"),
+            images: e.images,
+          })),
+          muscles: data.muscles.map((m) => ({
+            id: m.id,
+            name: m.name,
+            slug: m.slug,
+            imageUrl: m.imageUrl ?? null,
+          })),
+          workouts: data.workouts.map((w) => ({
+            id: w.id,
+            name: w.name,
+            slug: w.name.toLowerCase().replace(/\s+/g, "-"),
+            images: w.images,
+          })),
+        }
+
+        setResults(normalizedData)
+      } catch (err) {
+        console.error("Search error:", err)
+        setResults({ coaches: [], exercises: [], muscles: [], workouts: [] })
+      } finally {
+        setLoading(false)
       }
-
-      setResults(normalizedData)
-      setLoading(false)
     }, 300)
 
     return () => clearTimeout(timeout)
   }, [query])
 
+  // إغلاق عند الضغط خارج الـ container
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(e.target as Node)
-      ) {
-        setExpanded(false)
-        setResults(null)
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        handleCollapse()
       }
     }
     document.addEventListener("click", handleClickOutside)
@@ -152,13 +132,10 @@ export default function SearchBar({
         router.push(`/clients/programs/${slug}`)
         break
       case "workout":
-        router.push(`/workouts/${id}`)
-        break
-      default:
+        router.push(`/workouts/${slug}`)
         break
     }
-    setExpanded(false)
-    setResults(null)
+    handleCollapse()
   }
 
   return (
@@ -176,8 +153,9 @@ export default function SearchBar({
             autoFocus
             placeholder='Search...'
             className='bg-transparent focus:outline-none text-white w-full'
-            onBlur={handleCollapse}
-            onClick={handleExpand} 
+            onClick={handleExpand}
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
           />
         )}
       </div>
@@ -185,14 +163,13 @@ export default function SearchBar({
       {expanded && results && (
         <div className='absolute top-full left-0 mt-2 w-full max-h-[400px] overflow-y-auto bg-gray-800 rounded-xl shadow-lg z-50 p-4'>
           {loading && <p className='text-gray-300'>Loading...</p>}
-
           {!loading && (
             <div className='space-y-4'>
               {results.coaches.length > 0 && (
                 <div>
                   <h3 className='font-bold text-white mb-2'>Coaches</h3>
                   <div className='space-y-2'>
-                    {results.coaches.map((c: SearchResults["coaches"][0]) => (
+                    {results.coaches.map((c) => (
                       <div
                         key={c.id}
                         onClick={() => handleNavigate("coach", c.slug, c.id)}
@@ -211,9 +188,7 @@ export default function SearchBar({
                             No
                           </div>
                         )}
-                        <span className='text-white font-semibold'>
-                          {c.name}
-                        </span>
+                        <span className='text-white font-semibold'>{c.name}</span>
                       </div>
                     ))}
                   </div>
@@ -224,34 +199,28 @@ export default function SearchBar({
                 <div>
                   <h3 className='font-bold text-white mb-2'>Exercises</h3>
                   <div className='space-y-2'>
-                    {results.exercises.map(
-                      (e: SearchResults["exercises"][0]) => (
-                        <div
-                          key={e.id}
-                          onClick={() =>
-                            handleNavigate("exercise", e.slug, e.id)
-                          }
-                          className='flex items-center gap-3 cursor-pointer hover:bg-gray-700 rounded-md p-2'
-                        >
-                          {e.images.length > 0 ? (
-                            <Image
-                              src={e.images[0]}
-                              alt={e.title}
-                              width={40}
-                              height={40}
-                              className='rounded-full object-cover'
-                            />
-                          ) : (
-                            <div className='w-10 h-10 bg-gray-600 rounded-full flex items-center justify-center'>
-                              No
-                            </div>
-                          )}
-                          <span className='text-white font-semibold'>
-                            {e.title}
-                          </span>
-                        </div>
-                      )
-                    )}
+                    {results.exercises.map((e) => (
+                      <div
+                        key={e.id}
+                        onClick={() => handleNavigate("exercise", e.slug, e.id)}
+                        className='flex items-center gap-3 cursor-pointer hover:bg-gray-700 rounded-md p-2'
+                      >
+                        {e.images.length > 0 ? (
+                          <Image
+                            src={e.images[0]}
+                            alt={e.title}
+                            width={40}
+                            height={40}
+                            className='rounded-full object-cover'
+                          />
+                        ) : (
+                          <div className='w-10 h-10 bg-gray-600 rounded-full flex items-center justify-center'>
+                            No
+                          </div>
+                        )}
+                        <span className='text-white font-semibold'>{e.title}</span>
+                      </div>
+                    ))}
                   </div>
                 </div>
               )}
@@ -260,7 +229,7 @@ export default function SearchBar({
                 <div>
                   <h3 className='font-bold text-white mb-2'>Muscles</h3>
                   <div className='space-y-2'>
-                    {results.muscles.map((m: SearchResults["muscles"][0]) => (
+                    {results.muscles.map((m) => (
                       <div
                         key={m.id}
                         onClick={() => handleNavigate("muscle", m.slug, m.id)}
@@ -279,9 +248,7 @@ export default function SearchBar({
                             No
                           </div>
                         )}
-                        <span className='text-white font-semibold'>
-                          {m.name}
-                        </span>
+                        <span className='text-white font-semibold'>{m.name}</span>
                       </div>
                     ))}
                   </div>
@@ -292,7 +259,7 @@ export default function SearchBar({
                 <div>
                   <h3 className='font-bold text-white mb-2'>Workouts</h3>
                   <div className='space-y-2'>
-                    {results.workouts.map((w: SearchResults["workouts"][0]) => (
+                    {results.workouts.map((w) => (
                       <div
                         key={w.id}
                         onClick={() => handleNavigate("workout", w.slug, w.id)}
@@ -311,9 +278,7 @@ export default function SearchBar({
                             No
                           </div>
                         )}
-                        <span className='text-white font-semibold'>
-                          {w.name}
-                        </span>
+                        <span className='text-white font-semibold'>{w.name}</span>
                       </div>
                     ))}
                   </div>

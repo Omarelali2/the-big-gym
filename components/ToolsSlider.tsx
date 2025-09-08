@@ -45,9 +45,12 @@ type Props = { userPackageName: string }
 const ToolsSlider = ({ userPackageName }: Props) => {
   const [current, setCurrent] = useState(0)
   const itemsPerPage = 4
-  const availableTools = tools.filter(tool =>
-    tool.allowedPackages.includes(userPackageName)
+  const availableTools = tools.filter(
+    tool =>
+      userPackageName === "Admin" ||
+      tool.allowedPackages.includes(userPackageName)
   )
+
   const totalSlides = Math.ceil(availableTools.length / itemsPerPage)
 
   const nextSlide = () => {

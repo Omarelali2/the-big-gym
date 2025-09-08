@@ -12,9 +12,9 @@ import Logo from "./Logo"
 
 export default function Footer() {
   return (
-    <footer className=' text-gray-300 py-15 '>
-      <div className='max-w-7xl mx-auto flex flex-col md:flex-row gap-8 px-6'>
-        <div className='group w-full md:w-2/5'>
+    <footer className=' text-gray-300 text-center py-1 '>
+      <div className=' md:mx-50 flex flex-col items-center justify-between text-center md:flex-row gap-10 px-6'>
+        <div className='group w-full mr-8 md:w-3/5'>
           <Logo />
           <p className='text-sm mt-3 w-80 leading-relaxed group-hover:text-white transition-colors duration-300'>
             Transform Your Body with FitMaker, Your Trusted Partner in Fitness.
@@ -37,7 +37,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className='flex flex-wrap w-full gap-6'>
+        <div className='flex flex-wrap mr-8 w-full gap-6'>
           <div className='flex gap-3.5 w-50'>
             <div className='flex-1 min-w-[150px]'>
               <h3 className='text-red-500 font-semibold mb-3 hover:text-orange-500 transition-colors duration-300 cursor-pointer'>

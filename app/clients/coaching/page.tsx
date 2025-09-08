@@ -1,4 +1,4 @@
-import { currentUser } from "@clerk/nextjs/server" 
+import { currentUser } from "@clerk/nextjs/server"
 import { db } from "@/lib/db"
 import Image from "next/image"
 import Link from "next/link"
@@ -20,7 +20,19 @@ export default async function CoachesPage() {
     include: { selectedPackage: true },
   })
 
-  if (!dbUser || dbUser.selectedPackage?.name !== "Premium") {
+  if (!dbUser) {
+    return (
+      <div className='flex flex-col items-center justify-center h-[60vh] text-center'>
+        <h2 className='text-3xl md:text-4xl font-extrabold text-red-500 mb-4'>⚠️ Access Denied</h2>
+        <p className='text-gray-300 text-lg mb-6'>User not found in database.</p>
+      </div>
+    )
+  }
+
+  const isAdmin = dbUser.isAdmin ?? false
+  const userPackageName = dbUser.selectedPackage?.name ?? null
+
+  if (!isAdmin && userPackageName !== "Premium") {
     return (
       <div className='flex flex-col items-center justify-center h-[60vh] text-center'>
         <h2 className='text-3xl md:text-4xl font-extrabold text-red-500 mb-4'>⚠️ Access Denied</h2>
