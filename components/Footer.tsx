@@ -37,95 +37,98 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className='flex  md:flex-row flex-1 justify-between w-full gap-6'>
-          <div>
-            <h3 className='text-red-500 font-semibold mb-3 hover:text-orange-500 transition-colors duration-300 cursor-pointer'>
-              Company
-            </h3>
-            <ul className='space-y-2 text-sm'>
-              {[
-                "About Us",
-                "Our Services",
-                "Careers",
-                "Blog",
-                "Testimonial",
-                "Contact Us",
-              ].map((item, i) => (
-                <li
-                  key={i}
-                  className='hover:text-white hover:translate-x-1 transition-all duration-300 cursor-pointer'
-                >
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </div>
+        <div className='flex flex-wrap w-full gap-6'>
+          <div className='flex gap-3.5 w-50'>
+            <div className='flex-1 min-w-[150px]'>
+              <h3 className='text-red-500 font-semibold mb-3 hover:text-orange-500 transition-colors duration-300 cursor-pointer'>
+                Company
+              </h3>
+              <ul className='space-y-2 text-sm'>
+                {[
+                  "About Us",
+                  "Our Services",
+                  "Careers",
+                  "Blog",
+                  "Testimonial",
+                  "Contact Us",
+                ].map((item, i) => (
+                  <li
+                    key={i}
+                    className='hover:text-white hover:translate-x-1 transition-all duration-300 cursor-pointer'
+                  >
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-          <div>
-            <h3 className='text-red-500 font-semibold mb-3 hover:text-orange-500 transition-colors duration-300 cursor-pointer'>
-              Resources
-            </h3>
-            <ul className='space-y-2 text-sm'>
-              {[
-                "Fitness Tools",
-                "Workout Videos",
-                "Nutrition Guides",
-                "FAQ",
-                "Success Stories",
-                "Membership",
-              ].map((item, i) => (
-                <li
-                  key={i}
-                  className='hover:text-white hover:translate-x-1 transition-all duration-300 cursor-pointer'
-                >
-                  {item}
+            {/* Resources */}
+            <div className='flex-1 min-w-[150px]'>
+              <h3 className='text-red-500 font-semibold mb-3 hover:text-orange-500 transition-colors duration-300 cursor-pointer'>
+                Resources
+              </h3>
+              <ul className='space-y-2 text-sm'>
+                {[
+                  "Fitness Tools",
+                  "Workout Videos",
+                  "Nutrition Guides",
+                  "FAQ",
+                  "Success Stories",
+                  "Membership",
+                ].map((item, i) => (
+                  <li
+                    key={i}
+                    className='hover:text-white hover:translate-x-1 transition-all duration-300 cursor-pointer'
+                  >
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+          <div className="flex gap-3.5">
+            <div className='flex-1 min-w-[150px]'>
+              <h3 className='text-red-500 font-semibold mb-3 hover:text-orange-500 transition-colors duration-300 cursor-pointer'>
+                Programs
+              </h3>
+              <ul className='space-y-2 text-sm'>
+                {[
+                  "Weight Loss",
+                  "Building Muscles",
+                  "Home Workout",
+                  "Gym Plan",
+                  "Our Plans",
+                  "Fitness Group",
+                ].map((item, i) => (
+                  <li
+                    key={i}
+                    className='hover:text-white hover:translate-x-1 transition-all duration-300 cursor-pointer'
+                  >
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className='w-full mt-4'>
+              <h3 className='text-orange-500 font-semibold mb-3 hover:text-red-500 transition-colors duration-300 cursor-pointer'>
+                Contact Us
+              </h3>
+              <ul className='space-y-3 text-sm'>
+                <li className='flex items-center space-x-2 hover:text-white transition-colors duration-300'>
+                  <MapPin className='w-4 h-4 text-orange-500 transition-colors duration-300' />
+                  <span>LEB - Akkar-AlDawsa</span>
                 </li>
-              ))}
-            </ul>
-          </div>
-
-          <div>
-            <h3 className='text-red-500 font-semibold mb-3 hover:text-orange-500 transition-colors duration-300 cursor-pointer'>
-              Programs
-            </h3>
-            <ul className='space-y-2 text-sm'>
-              {[
-                "Weight Loss",
-                "Building Muscles",
-                "Home Workout",
-                "Gym Plan",
-                "Our Plans",
-                "Fitness Group",
-              ].map((item, i) => (
-                <li
-                  key={i}
-                  className='hover:text-white hover:translate-x-1 transition-all duration-300 cursor-pointer'
-                >
-                  {item}
+                <li className='flex items-center space-x-2 hover:text-white transition-colors duration-300'>
+                  <Phone className='w-4 h-4 text-orange-500 transition-colors duration-300' />
+                  <span>+961 70259020</span>
                 </li>
-              ))}
-            </ul>
-          </div>
-
-          <div>
-            <h3 className='text-orange-500 font-semibold mb-3 hover:text-red-500 transition-colors duration-300 cursor-pointer'>
-              Contact Us
-            </h3>
-            <ul className='space-y-3 text-sm'>
-              <li className='flex items-center space-x-2 hover:text-white transition-colors duration-300'>
-                <MapPin className='w-4 h-4 text-orange-500 transition-colors duration-300' />
-                <span>USA - Washington DC</span>
-              </li>
-              <li className='flex items-center space-x-2 hover:text-white transition-colors duration-300'>
-                <Phone className='w-4 h-4 text-orange-500 transition-colors duration-300' />
-                <span>1234-56789</span>
-              </li>
-              <li className='flex items-center space-x-2 hover:text-white transition-colors duration-300'>
-                <Mail className='w-4 h-4 text-orange-500 transition-colors duration-300' />
-                <span>Fitmakerrr@Gmail.Com</span>
-              </li>
-            </ul>
-          </div>
+                <li className='flex items-center space-x-2 hover:text-white transition-colors duration-300'>
+                  <Mail className='w-4 h-4 text-orange-500 transition-colors duration-300' />
+                  <span>elaliomar30@Gmail.Com</span>
+                </li>
+              </ul>
+            </div>
+          </div>{" "}
         </div>
       </div>
     </footer>

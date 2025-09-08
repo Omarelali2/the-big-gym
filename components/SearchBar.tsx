@@ -58,10 +58,26 @@ interface RawWorkout {
   images: string[]
 }
 
-export default function SearchBar() {
+export default function SearchBar({
+  onExpand,
+  onCollapse,
+}: {
+  onExpand: () => void
+  onCollapse: () => void
+}) {
+  const [expanded, setExpanded] = useState(false)
+
+  const handleExpand = () => {
+    setExpanded(true)
+    if (onExpand) onExpand() // ✅ استدعاء الـ callback
+  }
+
+  const handleCollapse = () => {
+    setExpanded(false)
+    if (onCollapse) onCollapse() // ✅ استدعاء الـ callback
+  }
   const [query, setQuery] = useState("")
   const [loading, setLoading] = useState(false)
-  const [expanded, setExpanded] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
   const [results, setResults] = useState<SearchResults | null>(null)
@@ -149,19 +165,19 @@ export default function SearchBar() {
     <div ref={containerRef} className='relative'>
       <div
         className={`flex items-center bg-gray-700 rounded-full px-2 py-3 pl-3.5 transition-all duration-300 ${
-          expanded ? "w-[35vw] md:w-[65vw]" : "w-12"
+          expanded ? "w-[65vw] md:w-[65vw]" : "w-12"
         } cursor-pointer`}
-        onClick={() => setExpanded(true)}
+        onClick={handleExpand}
       >
         <Search className='w-5 h-5 text-white' />
         {expanded && (
           <input
             type='text'
             autoFocus
-            value={query}
-            onChange={e => setQuery(e.target.value)}
-            placeholder='Search coaches, exercises, muscles, workouts...'
+            placeholder='Search...'
             className='bg-transparent focus:outline-none text-white w-full'
+            onBlur={handleCollapse}
+            onClick={handleExpand} 
           />
         )}
       </div>

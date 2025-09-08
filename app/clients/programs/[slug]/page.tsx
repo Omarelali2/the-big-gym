@@ -139,7 +139,7 @@ export default function MuscleDetailPage() {
             <Link
               href={`/clients/programs/${muscle.slug}/${ex.id}`}
               key={ex.id}
-              className='rounded-3xl border-2 border-red-700 hover:border-orange-700 shadow-xl overflow-hidden transition-transform duration-500 hover:scale-105 hover:shadow-2xl'
+              className='rounded-3xl border-2 w-full border-red-700 hover:border-orange-700 shadow-xl overflow-hidden transition-transform duration-500 hover:scale-105 hover:shadow-2xl'
             >
               <div className='relative w-full h-50 overflow-hidden group'>
                 <Image
@@ -152,7 +152,7 @@ export default function MuscleDetailPage() {
                 />
               </div>
 
-              <div className='p-5 bg-gray-900 text-white flex flex-col justify-between h-70'>
+              <div className='p-5 bg-gray-900 text-white flex flex-col justify-between h-78 md:h-70'>
                 <div>
                   <h2 className='text-2xl font-bold mb-2'>{ex.title}</h2>
                   <p className='text-gray-300 mb-4 line-clamp-3'>

@@ -15,33 +15,30 @@ import { createCheckoutSession } from "@/lib/stripe"
 const Home = async () => {
   const user = await currentUser()
   if (!user) {
-  return (
-    <Container>
-      <div className="flex flex-col items-center justify-center h-[60vh] text-center">
-        <h2 className="text-3xl md:text-4xl font-extrabold text-red-500 mb-4">
-          ⚠️ Access Denied
-        </h2>
-        <p className="text-gray-300 text-lg mb-6">
-          You need to log in to view our exclusive plans.
-        </p>
-        
-      </div>
-    </Container>
-  )
-}
-
+    return (
+      <Container>
+        <div className='flex flex-col items-center justify-center h-[60vh] text-center'>
+          <h2 className='text-3xl md:text-4xl font-extrabold text-red-500 mb-4'>
+            ⚠️ Access Denied
+          </h2>
+          <p className='text-gray-300 text-lg mb-6'>
+            You need to log in to view our exclusive plans.
+          </p>
+        </div>
+      </Container>
+    )
+  }
 
   const dbUser = await db.user.upsert({
-  where: { clerkUserId: user.id },
-  update: {},
-  create: {
-    clerkUserId: user.id,
-    email: user.emailAddresses[0].emailAddress,
-    name: user.firstName || user.username || "Anonymous",
-    imageUrl: user.imageUrl,
-  },
-})
-
+    where: { clerkUserId: user.id },
+    update: {},
+    create: {
+      clerkUserId: user.id,
+      email: user.emailAddresses[0].emailAddress,
+      name: user.firstName || user.username || "Anonymous",
+      imageUrl: user.imageUrl,
+    },
+  })
 
   if (!dbUser) throw new Error("User not found")
 
@@ -50,7 +47,7 @@ const Home = async () => {
   const packagesToShow = dbUser.subscriptionActive ? [] : allPackages
 
   return (
-    <Container className="mt-10">
+    <Container className='mt-10'>
       <HomeBanner />
       <Content />
       <Service />

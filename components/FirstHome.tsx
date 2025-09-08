@@ -14,8 +14,8 @@ const FirstHome = () => {
       <div className='space-y-5 flex items-center flex-col md:items-start md:text-left md:mr-10'>
         <Image src={Frame} alt='Frame' className='w-150' />
         <p className='text-base text-white text-center leading-relaxed max-w-xl mb-4 tracking-wide'>
-          &quot;Join the Fitmaker community and transform your fitness journey. Our
-          expert coaches and personalized programs are designed to help you
+          &quot;Join the Fitmaker community and transform your fitness journey.
+          Our expert coaches and personalized programs are designed to help you
           achieve your goals and exceed your expectations. Ready to make a
           change?&quot;
         </p>
@@ -23,7 +23,7 @@ const FirstHome = () => {
           {isSignedIn ? (
             <Link
               href={"/clients"}
-              className='text-xl pt-4 h-15 ml-43 font-semibold w-50 md:w-70 text-center bg-red-500 rounded-2xl text-white hover:bg-red-600 duration-500 hover:text-gray-200 px-3 py-2 cursor-pointer'
+              className='text-xl  pt-4 h-15 md:ml-43 font-semibold w-50 md:w-70 text-center bg-red-500 rounded-2xl text-white hover:bg-red-600 duration-500 hover:text-gray-200 px-3 py-2 cursor-pointer'
             >
               Get Started
             </Link>
@@ -47,40 +47,42 @@ const FirstHome = () => {
         </div>
 
         {/* أكاونت الإحصائيات */}
-        <div
-          className='absolute top-20 left-10 rounded-lg shadow-lg 
+        <div className="md:block hidden">
+          <div
+            className='absolute top-20 left-10 rounded-lg shadow-lg 
                 p-[2px] bg-gradient-to-r from-red-500 to-orange-500
-                transform transition duration-300 ease-in-out hover:scale-110'
-        >
-          <div className='bg-black/80 text-white px-4 py-2 rounded-lg'>
-            + 80 <br /> Coaches
+                transform transition duration-300 ease-in-out hover:scale-110 '
+          >
+            <div className='bg-black/80 text-white px-4 py-2 rounded-lg'>
+              + 80 <br /> Coaches
+            </div>
           </div>
-        </div>
-        <div
-          className='absolute top-20 -right-2 rounded-lg shadow-lg 
+          <div
+            className='absolute top-20 -right-2 rounded-lg shadow-lg 
                 p-[2px] bg-gradient-to-r from-red-500 to-orange-500
                 transform transition duration-300 ease-in-out hover:scale-110'
-        >
-          <div className='bg-black/80 text-white px-4 py-2 rounded-lg'>
-            + 1300 <br /> Positive Reviews
+          >
+            <div className='bg-black/80 text-white px-4 py-2 rounded-lg'>
+              + 1300 <br /> Positive Reviews
+            </div>
           </div>
-        </div>
-        <div
-          className='absolute -bottom-8 left-5 rounded-lg shadow-lg 
+          <div
+            className='absolute -bottom-8 left-5 rounded-lg shadow-lg 
                 p-[2px] bg-gradient-to-r from-red-500 to-orange-500
                 transform transition duration-300 ease-in-out hover:scale-110'
-        >
-          <div className='bg-black/80 text-white px-4 py-2 rounded-lg'>
-            + 1000 <br /> Workout Videos
+          >
+            <div className='bg-black/80 text-white px-4 py-2 rounded-lg'>
+              + 1000 <br /> Workout Videos
+            </div>
           </div>
-        </div>
-        <div
-          className='absolute bottom-0 right-1 rounded-lg shadow-lg 
+          <div
+            className='absolute bottom-0 right-1 rounded-lg shadow-lg 
                 p-[2px] bg-gradient-to-r from-red-500 to-orange-500
                 transform transition duration-300 ease-in-out hover:scale-110'
-        >
-          <div className='bg-black/80 text-white px-4 py-2 rounded-lg'>
-            + 1500 <br /> Trainers
+          >
+            <div className='bg-black/80 text-white px-4 py-2 rounded-lg'>
+              + 1500 <br /> Trainers
+            </div>
           </div>
         </div>
       </div>

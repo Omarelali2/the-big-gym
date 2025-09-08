@@ -70,7 +70,7 @@ export default function HomeBannerClient({ stats }: { stats: Stats }) {
 
         {/* coaches box */}
         <div
-          className='absolute top-20 left-10 rounded-lg shadow-lg 
+          className='absolute -left-5 top-10 md:top-20 md:left-10 rounded-lg shadow-lg 
                 p-[2px] bg-gradient-to-r from-red-500 to-orange-500
                 transform transition duration-300 ease-in-out hover:scale-110'
         >
@@ -82,7 +82,7 @@ export default function HomeBannerClient({ stats }: { stats: Stats }) {
 
         {/* reviews */}
         <div
-          className='absolute top-20 -right-2 rounded-lg shadow-lg 
+          className='absolute top-7 -right-5 md:top-20 md:-right-2 rounded-lg shadow-lg 
                 p-[2px] bg-gradient-to-r from-red-500 to-orange-500
                 transform transition duration-300 ease-in-out hover:scale-110'
         >
@@ -104,7 +104,7 @@ export default function HomeBannerClient({ stats }: { stats: Stats }) {
 
         {/* trainers */}
         <div
-          className='absolute bottom-0 right-1 rounded-lg shadow-lg 
+          className='absolute -right-10 bottom-0 md:right-1 rounded-lg shadow-lg 
                 p-[2px] bg-gradient-to-r from-red-500 to-orange-500
                 transform transition duration-300 ease-in-out hover:scale-110'
         >

@@ -6,7 +6,41 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+model User {
+  id                 String       @id @default(uuid())
+  clerkUserId        String       @unique
+  email              String       @unique
+  username           String?      @unique 
+  name               String?
+  imageUrl           String?
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+  subscriptionActive Boolean      @default(false)
+  selectedWorkoutId  String?
+  selectedWorkout    WorkoutType? @relation(fields: [selectedWorkoutId], references: [id])
+  chats              Chat[]
+  isAdmin            Boolean      @default(false)
+  phoneNumber        String?
+  address            String?
+  bio                String?
+  selectedPackageId  Int? // 🔹 FK للباقة اللي اختارها المستخدم
+  selectedPackage    Package?     @relation(fields: [selectedPackageId], references: [id])
 
+  height          Float? // cm
+  weight          Float? // kg
+  bodyFat         Float? // %
+  muscleMass      Float? // kg
+  activityLevel   String? // "Sedentary" | "Light" | "Moderate" | "Active" | "VeryActive"
+  fitnessGoal     String? // "LoseWeight" | "GainMuscle" | "Maintain" | "Endurance"
+  experienceLevel String?
+
+  exerciseComments  ExerciseComment[]
+  exerciseRatings   ExerciseRating[]
+  favoriteExercises Exercise[]        @relation("UserFavorites")
+
+  // 🔹 مرتبط بالـ daily calories
+  dailyCalories DailyCalories[]
+}
 model Package {
   id           Int      @id @default(autoincrement())
   name         String
@@ -116,41 +150,7 @@ model ExerciseComment {
 
   createdAt DateTime @default(now())
 }
-model User {
-  id                 String       @id @default(uuid())
-  clerkUserId        String       @unique
-  email              String       @unique
-  username           String?      @unique 
-  name               String?
-  imageUrl           String?
-  createdAt          DateTime     @default(now())
-  updatedAt          DateTime     @updatedAt
-  subscriptionActive Boolean      @default(false)
-  selectedWorkoutId  String?
-  selectedWorkout    WorkoutType? @relation(fields: [selectedWorkoutId], references: [id])
-  chats              Chat[]
-  isAdmin            Boolean      @default(false)
-  phoneNumber        String?
-  address            String?
-  bio                String?
-  selectedPackageId  Int? // 🔹 FK للباقة اللي اختارها المستخدم
-  selectedPackage    Package?     @relation(fields: [selectedPackageId], references: [id])
 
-  height          Float? // cm
-  weight          Float? // kg
-  bodyFat         Float? // %
-  muscleMass      Float? // kg
-  activityLevel   String? // "Sedentary" | "Light" | "Moderate" | "Active" | "VeryActive"
-  fitnessGoal     String? // "LoseWeight" | "GainMuscle" | "Maintain" | "Endurance"
-  experienceLevel String?
-
-  exerciseComments  ExerciseComment[]
-  exerciseRatings   ExerciseRating[]
-  favoriteExercises Exercise[]        @relation("UserFavorites")
-
-  // 🔹 مرتبط بالـ daily calories
-  dailyCalories DailyCalories[]
-}
 
 model ExerciseRating {
   id         String   @id @default(cuid())

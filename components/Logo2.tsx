@@ -6,10 +6,10 @@ interface LogoProps {
   className?: string
   spanDesign?: string
 }
-const Logo: React.FC<LogoProps> = ({ className, spanDesign }) => {
+const Logo1: React.FC<LogoProps> = ({ className, spanDesign }) => {
   return (
     <div className='flex gap-8 '>
-      <Link href={"/clients"} className='hidden md:block'>
+      <Link href={"/clients"} className='block mr-10 md:hidden '>
         <h1
           className={cn(
             "text-3xl text-white duration-300 hover:text-red-400 font-black tracking-wider uppercase group font-sans",
@@ -31,4 +31,4 @@ const Logo: React.FC<LogoProps> = ({ className, spanDesign }) => {
   )
 }
 
-export default Logo
+export default Logo1

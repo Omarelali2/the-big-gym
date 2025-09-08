@@ -571,18 +571,32 @@ export async function deleteCoachAction(id: string) {
 
 export async function toggleUserSubscription(userId: string) {
   try {
+    // جلب المستخدم
     const user = await db.user.findUnique({ where: { id: userId } })
     if (!user) {
       return { success: false, error: "User not found" }
     }
 
+    // عكس حالة الاشتراك الحالية
     const newStatus = !user.subscriptionActive
 
+    // تحديد الـ package اللي رح يتحط
+    let packageIdToSet: number | null = null
+    if (newStatus) {
+      const pkg = await db.package.findUnique({ where: { id: 1 } }) // حط الـ default package id
+      if (!pkg) {
+        console.warn("Default package with ID 1 not found. Setting selectedPackageId to null.")
+      } else {
+        packageIdToSet = pkg.id
+      }
+    }
+
+    // تحديث المستخدم
     const updatedUser = await db.user.update({
       where: { id: userId },
       data: {
         subscriptionActive: newStatus,
-        selectedPackageId: newStatus ? 1 : null,
+        selectedPackageId: packageIdToSet,
       },
     })
 
@@ -594,10 +608,11 @@ export async function toggleUserSubscription(userId: string) {
   } catch (error: unknown) {
     let message = "Unknown error"
     if (error instanceof Error) message = error.message
-    console.error("❌ Error fetching packages:", message)
-    return { success: false, error: message, packages: [] }
+    console.error("❌ Error toggling subscription:", message)
+    return { success: false, error: message }
   }
 }
+
 
 export type UserReview = {
   userId?: string

@@ -14,7 +14,6 @@ export const dynamic = "force-dynamic"
 
 const HeaderServer = async () => {
   const clerkUser = await currentUser()
-
   let isAdmin = false
 
   if (clerkUser) {
