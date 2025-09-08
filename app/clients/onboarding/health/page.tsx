@@ -58,7 +58,7 @@ export default function FitnessWizard() {
   }
 
   return (
-    <div className='mt-15 flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700 p-4'>
+    <div className='mt-15 flex items-center justify-center bg-gradient-to-br  p-4'>
       <div className='w-full max-w-md p-8 bg-gradient-to-br from-gray-600 via-gray-700 to-gray-800 shadow-2xl rounded-3xl text-white'>
         <h1 className='text-3xl font-extrabold mb-8 text-center text-gray-100'>
           Update Your Fitness Profile

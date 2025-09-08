@@ -7,6 +7,5 @@ export default function HealthLayout({
 }: {
   children: React.ReactNode
 }) {
-  // هذا الـ layout يخبّي الـ Header والFooter
-  return <div className='min-h-screen bg-gray-900 text-white'>{children}</div>
+  return <div className='min-h-screen text-white'>{children}</div>
 }
