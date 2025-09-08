@@ -300,7 +300,7 @@ export default function ExerciseDetailPage() {
 
   if (loading)
     return (
-      <div className='flex items-center justify-center mt-20 min-h-[60vh]'>
+      <div className='flex items-center justify-center mt-20 '>
         <div className='w-16 h-16 border-4 border-red-600 border-t-transparent border-solid rounded-full animate-spin'></div>
         <span className='ml-4 text-white text-lg font-semibold'>
           Loading...

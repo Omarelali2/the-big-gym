@@ -122,9 +122,9 @@ export default function Footer() {
                   <Phone className='w-4 h-4 text-orange-500 transition-colors duration-300' />
                   <span>+961 70259020</span>
                 </li>
-                <li className='flex items-center space-x-2 hover:text-white transition-colors duration-300'>
-                  <Mail className='w-4 h-4 text-orange-500 transition-colors duration-300' />
-                  <span>elaliomar30@Gmail.Com</span>
+                <li className='flex items-center hover:text-white transition-colors duration-300'>
+                  <Mail className='w-4 mr-2 h-4 text-orange-500 transition-colors duration-300' />
+                  <span>elaliomar30@...</span>
                 </li>
               </ul>
             </div>
