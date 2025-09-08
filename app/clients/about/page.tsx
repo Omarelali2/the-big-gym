@@ -31,7 +31,7 @@ export default function AboutPage() {
           height={48}
           unoptimized
           className='w-full md:w-3/5 rounded-2xl shadow-lg transition-transform duration-300 hover:scale-105 object-cover max-h-[520px]'
-          src='https://collegepill.com/wp-content/uploads/2024/01/heloise-hut-9.jpg'
+          src='https://labuwiki.com/wp-content/uploads/2021/10/22-13.jpg'
           alt='Contact Us'
         />
 
