@@ -569,7 +569,6 @@ export async function deleteCoachAction(id: string) {
   }
 }
 
-
 export async function createUserAction({
   clerkUserId,
   email,
@@ -578,70 +577,79 @@ export async function createUserAction({
   imageUrl,
   packageId,
 }: {
-  clerkUserId: string;
-  email: string;
-  name?: string;
-  username: string;
-  imageUrl?: string;
-  packageId?: number;
+  clerkUserId: string
+  email: string
+  name?: string
+  username: string
+  imageUrl?: string
+  packageId?: number
 }) {
   try {
-    let validPackageId: number | undefined;
+    let validPackageId: number | undefined
     if (packageId) {
-      const pkg = await db.package.findUnique({ where: { id: packageId } });
-      if (pkg) validPackageId = pkg.id;
+      const pkg = await db.package.findUnique({ where: { id: packageId } })
+      if (pkg) validPackageId = pkg.id
     }
 
-    const user = await db.user.upsert({
-      where: { clerkUserId },
-      update: {
-        name,
-        username,
-        imageUrl,
-        selectedPackageId: validPackageId,
-        subscriptionActive: validPackageId ? true : false,
-      },
-      create: {
-        clerkUserId,
-        email,
-        name,
-        username,
-        imageUrl,
-        selectedPackageId: validPackageId,
-        subscriptionActive: validPackageId ? true : false,
-        isAdmin: email === "elaliomar30@gmail.com",
-      },
-    });
+    // تحقق إذا المستخدم موجود مسبقًا
+    const existingUser = await db.user.findUnique({ where: { clerkUserId } })
 
-    return { success: true, user };
+    let user
+    if (existingUser) {
+      user = await db.user.update({
+        where: { clerkUserId },
+        data: {
+          name,
+          username,
+          imageUrl,
+          selectedPackageId: validPackageId,
+          subscriptionActive: validPackageId ? true : false,
+        },
+      })
+    } else {
+      user = await db.user.create({
+        data: {
+          clerkUserId,
+          email,
+          name,
+          username,
+          imageUrl,
+          selectedPackageId: validPackageId,
+          subscriptionActive: validPackageId ? true : false,
+          isAdmin: email === "elaliomar30@gmail.com",
+        },
+      })
+    }
+
+    return { success: true, user }
   } catch (error: unknown) {
-    let message = "Unknown error";
-    if (error instanceof Error) message = error.message;
-    console.error("❌ Error creating/updating user:", message);
-    return { success: false, error: message };
+    let message = "Unknown error"
+    if (error instanceof Error) message = error.message
+    console.error("❌ Error creating/updating user:", message)
+    return { success: false, error: message }
   }
 }
 
 // 🔹 تبديل حالة الاشتراك للمستخدم
 export async function toggleUserSubscription(userId: string) {
   try {
-    const user = await db.user.findUnique({ where: { id: userId } });
+    const user = await db.user.findUnique({ where: { id: userId } })
     if (!user) {
-      return { success: false, error: "User not found" };
+      return { success: false, error: "User not found" }
     }
 
-    const newStatus = !user.subscriptionActive;
+    const newStatus = !user.subscriptionActive
 
     // تحديد الـ default package إذا شغل الاشتراك
-    let packageIdToSet: number | null = null;
+    let packageIdToSet: number | null = null
     if (newStatus) {
-      const defaultPkg = await db.package.findUnique({ where: { id: 1 } });
+      const defaultPkg = await db.package.findUnique({ where: { id: 1 } })
       if (!defaultPkg) {
         console.warn(
           "Default package with ID 1 not found. selectedPackageId will remain null."
-        );
+        )
       } else {
-        packageIdToSet = defaultPkg.id;
+        packageIdToSet = defaultPkg.id
       }
     }
 
@@ -651,23 +659,20 @@ export async function toggleUserSubscription(userId: string) {
         subscriptionActive: newStatus,
         selectedPackageId: packageIdToSet,
       },
-    });
+    })
 
     return {
       success: true,
       subscriptionActive: updatedUser.subscriptionActive,
       selectedPackageId: updatedUser.selectedPackageId,
-    };
+    }
   } catch (error: unknown) {
-    let message = "Unknown error";
-    if (error instanceof Error) message = error.message;
-    console.error("❌ Error toggling subscription:", message);
-    return { success: false, error: message };
+    let message = "Unknown error"
+    if (error instanceof Error) message = error.message
+    console.error("❌ Error toggling subscription:", message)
+    return { success: false, error: message }
   }
 }
-
-
-
 
 export type UserReview = {
   userId?: string
