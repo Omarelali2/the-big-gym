@@ -39,7 +39,7 @@ export async function createCheckoutSession(
         quantity: 1,
       },
     ],
-    success_url: `${frontendUrl}/onboarding/health`,
+    success_url: `${frontendUrl}/programs`,
     cancel_url: `${frontendUrl}`,
     client_reference_id: userId,
     metadata: {
