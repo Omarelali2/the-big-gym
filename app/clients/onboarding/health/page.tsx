@@ -66,7 +66,7 @@ export default function FitnessWizard() {
       {step === 1 && (
         <div className='flex flex-col gap-4'>
           <label className='flex items-center gap-2'>
-            <Scale className='w-6 h-6 text-blue-400' /> Enter your height (cm)
+            <Scale className='w-6 h-6 text-blue-400' /> Enter your height  (cm)
           </label>
           <input
             type='number'
