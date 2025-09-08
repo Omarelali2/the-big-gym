@@ -1,6 +1,5 @@
 import { currentUser } from "@clerk/nextjs/server"
 import { SignOutButton } from "@clerk/nextjs"
-import { createUserAction } from "@/actions/createUser"
 import Container from "./Container"
 import Logo from "./Logo"
 import HeaderMenu from "./HeaderMenu"
@@ -10,6 +9,7 @@ import Link from "next/link"
 import { User, LayoutDashboard, LogOut } from "lucide-react"
 import Plan from "./Plan"
 import Image from "next/image"
+import { createUserAction } from "@/lib/data"
 export const dynamic = "force-dynamic"
 
 const HeaderServer = async () => {
@@ -17,14 +17,16 @@ const HeaderServer = async () => {
   let isAdmin = false
 
   if (clerkUser) {
-    const user = await createUserAction({
+    const result = await createUserAction({
       clerkUserId: clerkUser.id,
       email: clerkUser.emailAddresses[0].emailAddress,
       username: clerkUser.username ?? "",
       imageUrl: clerkUser.imageUrl,
     })
 
-    isAdmin = user.isAdmin
+    if (result.success && result.user) {
+      isAdmin = result.user.isAdmin
+    }
   }
 
   return (
