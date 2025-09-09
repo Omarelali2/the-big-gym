@@ -71,25 +71,25 @@ export default function SearchBar({
         const data = await searchAll({ query })
 
         const normalizedData: SearchResults = {
-          coaches: data.coaches.map((c) => ({
+          coaches: data.coaches.map(c => ({
             id: c.id,
             name: c.name,
             slug: c.name.toLowerCase().replace(/\s+/g, "-"),
             imageUrl: c.imageUrl ?? null,
           })),
-          exercises: data.exercises.map((e) => ({
+          exercises: data.exercises.map(e => ({
             id: e.id,
             title: e.title,
             slug: e.title.toLowerCase().replace(/\s+/g, "-"),
             images: e.images,
           })),
-          muscles: data.muscles.map((m) => ({
+          muscles: data.muscles.map(m => ({
             id: m.id,
             name: m.name,
             slug: m.slug,
             imageUrl: m.imageUrl ?? null,
           })),
-          workouts: data.workouts.map((w) => ({
+          workouts: data.workouts.map(w => ({
             id: w.id,
             name: w.name,
             slug: w.name.toLowerCase().replace(/\s+/g, "-"),
@@ -112,7 +112,10 @@ export default function SearchBar({
   // إغلاق عند الضغط خارج الـ container
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(e.target as Node)
+      ) {
         handleCollapse()
       }
     }
@@ -130,9 +133,6 @@ export default function SearchBar({
         break
       case "muscle":
         router.push(`/clients/programs/${slug}`)
-        break
-      case "workout":
-        router.push(`/workouts/${slug}`)
         break
     }
     handleCollapse()
@@ -155,7 +155,7 @@ export default function SearchBar({
             className='bg-transparent focus:outline-none text-white w-full'
             onClick={handleExpand}
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={e => setQuery(e.target.value)}
           />
         )}
       </div>
@@ -169,7 +169,7 @@ export default function SearchBar({
                 <div>
                   <h3 className='font-bold text-white mb-2'>Coaches</h3>
                   <div className='space-y-2'>
-                    {results.coaches.map((c) => (
+                    {results.coaches.map(c => (
                       <div
                         key={c.id}
                         onClick={() => handleNavigate("coach", c.slug, c.id)}
@@ -188,7 +188,9 @@ export default function SearchBar({
                             No
                           </div>
                         )}
-                        <span className='text-white font-semibold'>{c.name}</span>
+                        <span className='text-white font-semibold'>
+                          {c.name}
+                        </span>
                       </div>
                     ))}
                   </div>
@@ -199,7 +201,7 @@ export default function SearchBar({
                 <div>
                   <h3 className='font-bold text-white mb-2'>Exercises</h3>
                   <div className='space-y-2'>
-                    {results.exercises.map((e) => (
+                    {results.exercises.map(e => (
                       <div
                         key={e.id}
                         onClick={() => handleNavigate("exercise", e.slug, e.id)}
@@ -218,7 +220,9 @@ export default function SearchBar({
                             No
                           </div>
                         )}
-                        <span className='text-white font-semibold'>{e.title}</span>
+                        <span className='text-white font-semibold'>
+                          {e.title}
+                        </span>
                       </div>
                     ))}
                   </div>
@@ -229,7 +233,7 @@ export default function SearchBar({
                 <div>
                   <h3 className='font-bold text-white mb-2'>Muscles</h3>
                   <div className='space-y-2'>
-                    {results.muscles.map((m) => (
+                    {results.muscles.map(m => (
                       <div
                         key={m.id}
                         onClick={() => handleNavigate("muscle", m.slug, m.id)}
@@ -248,37 +252,9 @@ export default function SearchBar({
                             No
                           </div>
                         )}
-                        <span className='text-white font-semibold'>{m.name}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {results.workouts.length > 0 && (
-                <div>
-                  <h3 className='font-bold text-white mb-2'>Workouts</h3>
-                  <div className='space-y-2'>
-                    {results.workouts.map((w) => (
-                      <div
-                        key={w.id}
-                        onClick={() => handleNavigate("workout", w.slug, w.id)}
-                        className='flex items-center gap-3 cursor-pointer hover:bg-gray-700 rounded-md p-2'
-                      >
-                        {w.images.length > 0 ? (
-                          <Image
-                            src={w.images[0]}
-                            alt={w.name}
-                            width={40}
-                            height={40}
-                            className='rounded-full object-cover'
-                          />
-                        ) : (
-                          <div className='w-10 h-10 bg-gray-600 rounded-full flex items-center justify-center'>
-                            No
-                          </div>
-                        )}
-                        <span className='text-white font-semibold'>{w.name}</span>
+                        <span className='text-white font-semibold'>
+                          {m.name}
+                        </span>
                       </div>
                     ))}
                   </div>

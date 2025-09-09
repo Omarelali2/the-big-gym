@@ -29,7 +29,7 @@ const FirstHome = () => {
             </Link>
           ) : (
             <SignInButton>
-              <button className='text-2xl h-20 ml-43 font-semibold w-50 md:w-70 text-center bg-red-500 rounded-2xl text-white hover:bg-red-600 duration-500 hover:text-gray-200 px-3 py-2 cursor-pointer'>
+              <button className='text-2xl h-20 md:ml-43 font-semibold w-50 md:w-70 text-center bg-red-500 rounded-2xl text-white hover:bg-red-600 duration-500 hover:text-gray-200 px-3 py-2 cursor-pointer'>
                 Get Started
               </button>
             </SignInButton>

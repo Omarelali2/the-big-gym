@@ -57,7 +57,7 @@ export default function ChatInput({
         value={text}
         onChange={e => setText(e.target.value)}
         onKeyDown={e => e.key === "Enter" && handleSend()}
-        className='flex-1 px-4 py-3 rounded-full bg-gray-700 text-white'
+        className='flex-1 px-2 py-3 rounded-full bg-gray-700 text-white'
         placeholder='Type a message...'
       />
       <button
@@ -68,7 +68,7 @@ export default function ChatInput({
         }`}
       >
         {isPending ? (
-          "Sending..."
+          "..."
         ) : (
           <Send className='w-5 h-5 text-white' /> // أيقونة Send
         )}
